@@ -1,0 +1,1533 @@
+
+===== PAGINA 1 =====
+ 
+ 
+ 
+ 
+ 
+ 
+DOCUMENTO PROPUESTA  
+  
+ 
+GUÍA PARA LA IDENTIFICACIÓN DE ZONAS POTENCIALES 
+PARA INFRAESTRUCTURA DE DISPOSICIÓN FINAL DE RESIDUOS 
+SÓLIDOS MUNICIPALES 
+DIRECCIÓN     GENERAL     DE     GESTIÓN     DE 
+RESIDUOS SÓLIDOS 
+DIRECCIÓN   GENERAL   DE   ORDENAMIENTO 
+TERRITORIAL Y  DE  LA  GESTIÓN  INTEGRADA 
+DE LOS RECURSOS NATURALES  
+ 
+AÑO 2021 
+
+===== PAGINA 2 =====
+1 
+CONTENIDO    
+I. INTRODUCCIÓN ................................................................................................................5 
+II. ASPECTOS GENERALES.......................................................................................................6 
+2.1. ANTECEDENTES .........................................................................................................6 
+2.2. PROCESO DE ZONIFICACIÓN ECOLÓGICA Y ECONÓMICA ................................................6 
+2.3. GESTIÓN INTEGRAL DE LOS RESIDUOS SÓLIDOS ............................................................7 
+III. CONSIDERACIONES DE LA GUÍA ..........................................................................................8 
+3.1. OBJETIVO DE LA GUÍA ................................................................................................8 
+3.2. ¿QUÉ ENCONTRARÁ EN LA GUÍA? ................................................................................8 
+3.3. ¿A QUIÉN ESTÁ DIRIGIDA? ..........................................................................................8 
+3.4. ¿POR QUÉ ES IMPORTANTE IDENTIFICAR LAS ZONAS POTENCIALES PARA IMPLEMENTAR 
+LAS INFRAESTRUCTURAS DE DISPOSICIÓN FINAL DE RESIDUOS SÓLIDOS MUNICIPALES? ............8 
+IV. MARCO LEGAL...............................................................................................................9 
+V. FASES   PARA   LA   IDENTIFICACIÓN   DE   ZONAS   POTENCIALES   PARA   INFRAESTRUCTURA   DE 
+DISPOSICIÓN FINAL DE RESIDUOS SÓLIDOS MUNICIPALES .........................................................11 
+5.1. FASE INICIAL ............................................................................................................11 
+5.2. FASE DE ANÁLISIS ESPACIAL ......................................................................................15 
+5.3. FASE DE EVALUACIÓN ..............................................................................................19 
+5.4. CASO DE APLICACIÓN ...............................................................................................20 
+VI. CONSIDERACIONES FINALES .........................................................................................41 
+VII. GLOSARIO ...................................................................................................................41 
+VIII. ACRÓNIMOS Y SIGLAS..................................................................................................43 
+ 
+ 
+ 
+ 
+ 
+
+===== PAGINA 3 =====
+2 
+INDICE DE GRÁFICOS 
+GRÁFICO 1.  PROCEDIMIENTO METODOLÓGICO .......................................................................11 
+GRÁFICO 2. ÁREA DE SEGURIDAD DE 13 KM DE RADIO ..............................................................13 
+GRÁFICO 3. ESQUEMA MODELOMIENTO ESPACIAL ...................................................................19 
+GRÁFICO  4.  BUSQUEDA  DE  INFORMACIÓN  EN  LAS  DIVERSAS  PLATAFORMAS  DE  SISTEMAS  DE 
+INFORMACIÓN GEOGRÁFICA ..................................................................................................21 
+GRÁFICO 5. ACONDICIONAMIENTO CARTOGRÁFICO DE ÁREAS AGRÍCOLAS ................................23 
+GRÁFICO 6. ORGANIZACIÓN DE LA BASE DE DATOS GEOESPACIAL..............................................24 
+GRÁFICO 7. UBICACIÓN DE CENTROS POBLADOS ......................................................................26 
+GRÁFICO 8. ÁMBITO DE INFLUENCIA A CENTROS POBLADOS .....................................................26 
+GRÁFICO 9. UBICACIÓN DE CAUCE DE RIOS Y LAGUNAS.............................................................27 
+GRÁFICO 10. ÁMBITO DE INFLUENCIA A CAUCE DE RIOS Y LAGUNAS ..........................................27 
+GRÁFICO 11. UBICACIÓN Y ÁMBITO DE INFLUENCIA DE GRANJAS AVÍCOLAS ...............................28 
+GRÁFICO 12. UBICACIÓN Y AMBITO DE INFLUENCIA DE ÁREAS AGRÍCOLAS .................................28 
+GRÁFICO 13. ESPACIALIZACIÓN DE PENDIENTES .......................................................................29 
+GRÁFICO 14. UBICACIÓN Y ÁMBITO DE INFLUENCIA DE FALLAS GEOLÓGICAS ..............................29 
+GRÁFICO 15. UBICACIÓN Y ÁMBITO DE INFLUENCIA DE AERÓDROMO ........................................30 
+GRÁFICO 16. ZONAS SIN RESTRICCIONES ..................................................................................30 
+GRÁFICO 17. RESULTADO DE ANÁLIS DE RESTRICCIONES ...........................................................31 
+GRÁFICO 18. ESPACIALIZACIÓN DE ÁREAS NATURALES PROTEGIDAS ..........................................32 
+GRÁFICO 19. ESPACIALIZACIÓN DE PELIGROS POR MOVIMIENTOS EN MASA ..............................32 
+GRÁFICO 20. ESPACIALIZACIÓN DE PELIGROS POR INUNDACIÓN ................................................33 
+GRÁFICO 21. ESPACIALIZACIÓN DE PELIGROS POR INUNDACIÓN Y MOVIMIENTOS EN MASA .......33 
+GRÁFICO 22. ESPACIALIZACIÓN DE BOFEDAL ............................................................................34 
+GRÁFICO 23. ESPACIALIZACIÓN DE ACUÍFEROS .........................................................................34 
+GRÁFICO 24. ESPACIALIZACIÓN DE FAJA MARGINAL DE RÍOS .....................................................35 
+
+===== PAGINA 4 =====
+3 
+GRÁFICO 25. ESPACIALIZACIÓN DE FRANJA MARINO COSTERA ..................................................35 
+GRÁFICO 26. ESPACIALIZACIÓN DE SITIOS ARQUEOLÓGICOS......................................................36 
+GRÁFICO 27. ESPACIALIZACIÓN DE COMUNIDADES CAMPESINAS ..............................................36 
+GRÁFICO 28. ESPACIALIZACIÓN DE CONCESIONES MINERAS ......................................................37 
+GRÁFICO 29. ZONAS SIN EXCLUSIONES ....................................................................................37 
+GRÁFICO 30. RESULTADO DEL ANÁLISIS DE LAS EXCLUSIONES....................................................38 
+GRÁFICO 31. PROPUESTA DE ZONAS POTENCIALES PARA INFRAESTRUCTURA DE DISPOSICIÓN FINAL 
+DE RESIDUOS SÓLIDOS MUNICIPALES DEL DEPARTAMENTO DE AREQUIPA .................................39 
+GRÁFICO 32. DETALLE DE LOS RESULTADOS EN LA PROVINCIA DE AREQUIPA ..............................40 
+GRÁFICO 33. DETALLE DE LOS RESULTADOS EN LA PROVINCIA DE AREQUIPA ..............................41 
+ 
+INDICE DE TABLAS 
+TABLA  1.  SELECCIÓN  DE  ÁREA  PARA  INFRAESTRUCTURA  DE  DISPOSICIÓN  FINAL  DE  RESIDUOS 
+SÓLIDOS ................................................................................................................................12 
+TABLA 2. CONDICIONES PARA LA UBICACIÓN DE INFRAESTRUCTURA DE DISPOSICIÓN FINAL .......12 
+TABLA 3. INVENTARIO DE INFORMACIÓN GEOESPACIAL DE ENTIDADES PÚBLICAS ......................14 
+TABLA 4. DICCIONARIO DE DATOS ...........................................................................................15 
+TABLA  5.  DEFINICIÓN  DE  VARIABLES  TEMÁTICAS  QUE  FORMAN  PARTE  DE  LAS  RESTRICCIONES  Y 
+EXCLUSIONES DEL MODELO ....................................................................................................15 
+TABLA 6. CONSOLIDACIÓN DE LA INFORMACIÓN TEMÁTICA REQUERIDA PARA EL MODELAMIENTO 
+CARTOGRÁFICO .....................................................................................................................17 
+TABLA 7. INVENTARIO DE INFORMACIÓN GEOESPACIAL DE ENTIDADES PÚBLICAS ......................21 
+TABLA   8.   SISTEMATIZACIÓN   DE   INFORMACIÓN   PARA   LA   APLICACIÓN   DEL   MODELO   DE 
+IDENTIFICACIÓN  DE  ZONAS  POTENCIALES  PARA  INFRAESTRUCTURA  DE  DISPOSICIÓN  FINAL  DE 
+RESIDUOS SÓLIDOS MUNICIPALES ...........................................................................................22 
+TABLA 9. DICCIONARIO DE DATOS ...........................................................................................24 
+TABLA  10. DEFINICIÓN  DE  VARIABLES  TEMÁTICAS  QUE  FORMAN  PARTE  DE  LAS  RESTRICCIONES  Y 
+EXCLUSIONES DEL MODELO ....................................................................................................25 
+
+===== PAGINA 5 =====
+4 
+TABLA 11. CONSOLIDACIÓN DE LA INFORMACIÓN TEMÁTICA REQUERIDA PARA EL ANÁLISIS DE LAS 
+RESTRICCIONES - AREQUIPA ...................................................................................................25 
+TABLA 12. CONSOLIDACIÓN DE  LA INFORMACIÓN TEMÁTICA REQUERIDA PARA EL ANÁLIS DE LAS 
+EXCLUSIONES - AREQUIPA ......................................................................................................31 
+TABLA 13. CONSOLIDACIÓN DE LA INFORMACIÓN TEMÁTICA REQUERIDA PARA EL MODELAMIENTO 
+CARTOGRÁFICO .....................................................................................................................38 
+  
+
+===== PAGINA 6 =====
+5 
+I. INTRODUCCIÓN 
+Según  estimaciones  realizadas  por  la  Dirección  General  de  Gestión  de  Residuos  Sólidos  (DGRS)  del 
+Ministerio  del  Ambiente,  el año  2020 en  el  Perú  se  generaron  7 905  118.00 toneladas  de  residuos 
+sólidos y solo se valorizó el 0.75% de estos.  El 54.9 % de los residuos se dispuso en rellenos sanitarios. 
+Estas  cifras  se  basan  en  los  reportes  sobre  la  gestión  de  los  residuos  sólidos ejecutada  por  las 
+municipalidades provinciales y distritales en el Sistema de Información sobre la Gestión de Residuos 
+Sólidos (SIGERSOL).  
+Según  el  Organismo  de  Evaluación  y  Fiscalización  Ambiental  (OEFA),  a  nivel  nacional  tenemos  1637 
+áreas degradadas por residuos sólidos en las que se dispone el 44.35% de los residuos generados
+1
+. 
+Con la finalidad de contribuir al cierre de brechas sobre la disposición final adecuada de los residuos 
+sólidos, las municipalidades provinciales y distritales formulan proyectos de inversión para servicios 
+de  limpieza  pública  o  de  implementación  de  infraestructuras  de  disposición  final.  Sin  embargo, la 
+viabilidad de dichos proyectos se complica al no contar con terrenos con saneamiento físico legal para 
+implementar las infraestructuras, o que no  se tomen en  cuenta  las  restricciones  o  las  exclusiones 
+normativas en  la  elección  del  terreno.  Ello  genera retrasos  y, en  algunos  casos, pérdida  del 
+presupuesto asignado. 
+El  Ministerio  del  Ambiente  (MINAM)  en  el  marco  de  sus  funciones  brinda  asistencia  técnica  a  los 
+gobiernos  locales,  con el  fin de  fortalecer  sus  capacidades  en  la  adecuada  gestión  y  manejo  de  los 
+residuos sólidos. Además, en lo que corresponde a la implementación de proyectos de inversión en la 
+tipología de gestión integral de residuos sólidos. Asimismo, brinda asistencia técnica para el desarrollo 
+del proceso de zonificación ecológica y económica (ZEE). 
+Se espera  contribuir  y articular con  el  Plan  Nacional de  Competitividad  2019-2030  respecto  del 
+objetivo prioritario número 9, Sostenibilidad Ambiental, 9.2: Gestión Integral de Residuos Sólidos, en 
+el cual se establece la construcción de 20 plantas de valorización de residuos y 20 rellenos sanitarios 
+en el país. Ello permitirá las sinergias desde el nivel nacional para una adecuada gestión de los residuos 
+sólidos. 
+La principal  necesidad  es contar  con  información  de  las  potenciales  zonas  de  localización para este 
+tipo de infraestructuras que cumplan con los criterios técnicos establecidos en el marco legal, y con 
+criterios ambientales que garanticen impactos mínimos sobre el ambiente, a partir de la base de la 
+información técnica que permita promover y orientar la inversión pública y privada. 
+En este contexto, la Dirección General de Gestión de Residuos Sólidos (DGRS) y la Dirección General 
+de  Ordenamiento  Territorial  y  de  la  Gestión  Integrada  de  los  Recursos  Naturales (DGOTGIRN) han 
+desarrollado la  presente  guía  metodológica    para  la  identificación  de zonas potenciales  para 
+infraestructuras   de   disposición   final   de   residuos   sólidos   municipales,   considerando   criterios, 
+restricciones y exclusiones conforme lo dispuesto en el Decreto Legislativo Nº 1278, que aprueba la 
+Ley de Gestión Integral de Residuos Sólidos y  su reglamento, aprobado a través del  Decreto Supremo 
+Nº 014-2017-MINAM. En el reglamento del Decreto Legislativo Nº 1278, Título IX, Capítulo V, Artículos 
+109, 110 y 111, contemplan los requisitos de selección de áreas para infraestructura de disposición 
+final,  condiciones  para  la ubicación de  infraestructura  de  disposición  final  de  residuos  sólidos  y  su 
+implementación cercana a aeródromos.  
+En ese sentido, la metodología desarrollada toma en cuenta los criterios normativos de restricción y 
+exclusión en  la  identificación  de  zonas  potenciales  para  implementar  las infraestructuras  de 
+disposición  final  de  residuos  sólidos  municipales,  acordes  a  las  potencialidades  y  limitaciones  del 
+territorio con la finalidad que, durante la etapa constructiva o ejecución de los proyectos de inversión, 
+se reduzcan los inconvenientes de carácter técnico o ambiental que limite su ejecución Por tal motivo, 
+                                                
+1
+ Organismo de Evaluación y Fiscalización Ambiental 2021 
+
+===== PAGINA 7 =====
+6 
+es  importante  que  previo  a  la  etapa  de  formulación  de  un  proyecto de  inversión se  identifique, de 
+manera adecuada, las áreas destinadas para los residuos sólidos.  
+Al  respecto,  las  capas  que  se  han  analizado están  asociadas  con  información de  centros  poblados, 
+aeródromos,  aguas  superficiales,  granjas,  actividades  económicas,  fallas  geológicas,  pendientes, 
+peligros por fenómenos naturales (inundación y remoción en masa), patrimonio cultural, entre otros. 
+Una  capa  importante  de  información  georreferenciada  que  debe  tomarse  en  cuenta  en  esta 
+metodología es la ubicación de los predios del Estado, que son administrados por la Superintendencia 
+Nacional de Bienes Estatales, entidad que administra los bienes de propiedad estatal asegurando el 
+saneamiento físico legal de los mismos. 
+ 
+II. ASPECTOS GENERALES 
+ 
+2.1. ANTECEDENTES 
+A la fecha aproximadamente el 59% del territorio nacional cuenta con información temática 
+referida a potencialidades y limitaciones relacionadas a diversas alternativas de uso sostenible 
+del territorio generada a través de los procesos de Zonificación Ecológica y Económica (ZEE) 
+aprobados a nivel de gobiernos regionales y locales. 
+El producto de la evaluación de las Unidades Ecológicas Económicas
+2
+, identifica las diversas 
+opciones  de  uso  sostenible  del  territorio,  a  través  de  las  categorías  de  uso,  entre  ellas,  las 
+zonas de recuperación, que incluyen áreas que requieren de una estrategia especial para la 
+recuperación de los ecosistemas degradados o contaminados.  
+En ese sentido,  dicha  información  técnica es  un  valioso  insumo que  puede aportar  en  la 
+formulación de proyectos de inversión pública orientados a solucionar aspectos ambientales 
+relevantes. 
+La  DGOTGIRN administra  esta  información  a  nivel  nacional  a  través  de  la plataforma  del 
+GeoServidor, permitiendo acceder a la información territorial y proceder a la integración de la 
+misma, e incluye la disponibilidad de imágenes satelitales, articulada a otras plataformas de 
+información  del  MINAM  alojadas  en  el  referido  sistema  de  información,  de gobiernos 
+regionales y locales, así como de otros sectores; y puestos a disposición de la ciudadanía. 
+La Dirección General de Gestión de Residuos Sólidos (DGRS), brinda la asistencia técnica para 
+la formulación de proyectos de inversión con el objetivo de contar con una adecuada gestión 
+integral de los residuos sólidos municipales, y orientar a los gobiernos locales en la búsqueda 
+de financiamiento a través de mecanismos financieros existentes; por lo que el sector viene 
+realizando un análisis de diversos mecanismos que puedan financiar esta cartera de proyectos. 
+Ambas  direcciones han coordinado  acciones  para  la  definición  de  un  procedimiento  que 
+permita articular la información de la ZEE y otras que pueda provenir de fuentes oficiales del 
+sector público, con las iniciativas regionales y locales orientadas a la gestión de los residuos 
+sólidos. 
+ 
+2.2. PROCESO DE ZONIFICACIÓN ECOLÓGICA Y ECONÓMICA 
+En  nuestro  país  la  ocupación  del  territorio  se  ha  dado  de  manera  inadecuada,  generado 
+diversos  problemas  como  la  desarticulación  territorial,  la  exclusión  de estos  espacios de los 
+                                                
+2
+ Las  Unidades  Ecológicas  Económicas  (UEE)  son  unidades  espaciales  relativamente  homogéneas, 
+resultado  de la  integración  espacial  de  variables  físicas,  biológicas,  sociales,  económicas  y culturales. 
+Decreto Supremo N°087-2004-PCM que aprueba el Reglamento de Zonificación Ecológica y Económica.  
+
+===== PAGINA 8 =====
+7 
+procesos de desarrollo, la desigualdad en el acceso a servicios básicos y equipamiento y falta 
+de  competitividad.  Asimismo, el  incremento  de  la  ocupación en zonas  de  alto  riesgo  de 
+desastres involucrando,  incluso, inversión  pública  y  privada,  en  algunos  casos  con  efectos 
+negativos en los ecosistemas que proveen bienes y servicios. Este modelo de ocupación  del 
+territorio basado en la demanda de recursos naturales se constituye en la base productiva del 
+país. 
+Superar esta condición crítica requiere de una visión concertada de desarrollo sostenible del 
+territorio, que   promueva la   competitividad,   la   localización   de   centros   urbanos   e 
+infraestructura  social  y  económica  en  áreas  no  expuestas  a  peligros,  la  conservación  de  los 
+recursos (ecosistemas) y sus beneficios  ambientales,  así  como  el impulso de  actividades 
+sostenibles,  en  armonía con  la  naturaleza para la preservación  de  nuestra biodiversidad y 
+beneficie a las personas.  
+La Zonificación  Ecológica  y  Económica  (ZEE) es  un  proceso  dinámico  y  flexible  para  la 
+identificación  de  diferentes  alternativas  de  uso  sostenible  de  un  territorio determinado, 
+basado en la evaluación de sus potencialidades y limitaciones con criterios físicos, biológicos, 
+sociales,  económicos  y  culturales.  Una  vez  aprobada  la  ZEE  se  convierte  en  un  instrumento 
+técnico  y  orientador  del  uso  sostenible  de  un  territorio y  de  sus  recursos  naturales
+3
+,  las 
+diversas instituciones públicas en el ámbito nacional, regional y local deberán utilizar la ZEE 
+como instrumento de planificación y de gestión del territorio. 
+En ese sentido, la ZEE tiene por finalidad orientar la toma de decisiones sobre los mejores usos 
+del territorio, considerando las necesidades de la población que la habita, y en armonía con el 
+ambiente
+4
+,  en  tanto  es  un  instrumento  que  provee  información  estratégica  (confiable  y 
+detallada) que permite el establecimiento de brechas para el desarrollo. 
+ 
+2.3. GESTIÓN INTEGRAL DE LOS RESIDUOS SÓLIDOS 
+El Ministerio del Ambiente, a través de la Dirección General de Gestión de Residuos Sólidos 
+(DGRS), ha  centrado  sus  esfuerzos  en  mejorar  la  gestión  integral  de  residuos  sólidos,  de 
+manera  planificada.  A través  de  diversos  instrumentos  de  planificación,  se  cuentan  con 
+acciones que deben ser implementadas a corto, mediano y largo plazo.  
+Un  instrumento  importante  es  el  Plan  Nacional  de Gestión  Integral Residuos  Sólidos
+5
+ 
+(PLANRES),  el cual  incluye  las  metas,  estrategias  y  acciones  destinadas  a  asegurar  la 
+universalización  y  sostenibilidad  del  servicio  de  limpieza  pública,  la  formalización  de  los 
+recicladores por parte de las municipalidades, la promoción de la minimización y valorización 
+de los residuos, entre otros. Además, sirve de base para que las municipalidades provinciales 
+elaboren   sus   Planes   Integrados   de   Gestión   de   Residuos   Sólidos (PIGARS) y que las 
+municipalidades distritales elaboren sus planes de manejo de residuos sólidos.    
+El MINAM  también  ha  centrado  esfuerzos  hacia  el  mejoramiento  operativo  de  la  gestión  y 
+manejo  de  residuos  sólidos por los  gobiernos  locales.  En ese  sentido  se  tienen  diversas 
+iniciativas y proyectos que buscan mejorar los servicios de limpieza pública, la construcción de 
+infraestructura  para  el  manejo  de  residuos  sólidos,  el  incremento  del  reciclaje  de  residuos 
+sólidos municipales y la educación ambiental hacia el consumo responsable. Un instrumento 
+que sirve de base para apoyar la mejora de la gestión y manejo de los residuos sólidos es el 
+SIGERSOL Municipal.  
+                                                
+3
+ Artículo 1 del Reglamento de Zonificación Ecológica y Económica, D.S. N° 087-2004-PCM. 
+4
+ Artículo 2 del Reglamento de Zonificación Ecológica y Económica, D.S. N° 087-2004-PCM. 
+5
+ Resolución Ministerial N° 191-2016-MINAM. 
+
+===== PAGINA 9 =====
+8 
+El SIGERSOL
+6
+ es coadministrado por el MINAM y el OEFA y constituye el instrumento oficial 
+para reportar información sobre planificación, gestión y manejo de los residuos sólidos, por 
+parte de autoridades públicas en el marco de sus competencias.  
+Dicho sistema brinda información para la formulación de proyectos de inversión pública sobre 
+la implementación de Infraestructuras de Residuos Sólidos (IRS), ya que se podrán construir 
+indicadores  que  permitan  calcular  el  dimensionamiento  de  las  infraestructuras  de  residuos 
+sólidos y apoyar en la viabilidad de dichos proyectos.   
+ 
+III. CONSIDERACIONES DE LA GUÍA 
+3.1. OBJETIVO DE LA GUÍA 
+La presente guía tiene por objetivo orientar a los gobiernos locales en la identificación de zonas 
+potenciales para   implementar   infraestructuras de   disposición   final   de   residuos   sólidos 
+municipales, como insumo técnico estratégico de los proyectos de inversión de infraestructuras, 
+acordes a las potencialidades y limitaciones del territorio. 
+3.2. ¿QUÉ ENCONTRARÁ EN LA GUÍA? 
+En esta guía encontrará los pasos, fases y criterios técnicos y normativos para la identificación de 
+zonas potenciales para la implementación de las infraestructuras de disposición final de residuos 
+sólidos  municipales, así como,  la aplicación  de  la  guía  en  un  ámbito  territorial  que  permitirá 
+apoyar a lograr la viabilidad de los proyectos de inversión que formulen los gobiernos locales. 
+ 
+3.3. ¿A QUIÉN ESTÁ DIRIGIDA? 
+Las  municipalidades  provinciales  en  coordinación  con  las  distritales  tienen  como  una  de  sus 
+funciones   la   de   identificar   los  espacios   geográficos   en   su   jurisdicción   para  implementar 
+infraestructuras   de   disposición   final   de   residuos   sólidos,   de   acuerdo con su   contexto, 
+problemática  y  política  ambiental,  para  ello  es  necesario  tomar  en  cuenta  las  restricciones  y 
+exclusiones indicadas en el marco legal. 
+La guía está dirigida a: 
+ Servidores civiles de municipalidades provinciales y distritales de todo el territorio nacional. 
+ Los  diferentes  niveles  de  gobierno que ejercen  competencias  y  funciones  en  la  gestión 
+territorial en sus jurisdicciones. 
+ Especialistas que trabajan en la gestión integral de residuos sólidos. 
+ 
+3.4. ¿POR QUÉ ES IMPORTANTE IDENTIFICAR LAS ZONAS POTENCIALES PARA IMPLEMENTAR 
+LAS INFRAESTRUCTURAS DE DISPOSICIÓN FINAL DE RESIDUOS SÓLIDOS MUNICIPALES? 
+Es importante identificar las zonas potenciales para implementar infraestructuras de disposición 
+final de residuos sólidos municipales porque: 
+ Contribuye a lograr la viabilidad de los proyectos e inversión para la implementación de 
+la  infraestructura  de  disposición  final  de  residuos  sólidos  municipales  en  el lugar 
+adecuado.  
+ 
+ Permite   contar con   alternativas   de   sitios   adecuados   para   la   implementación   de 
+infraestructuras  de  disposición  final  de  residuos  sólidos,  tomando  en  consideración  el   
+crecimiento de la población y de las actividades económicas.  
+ 
+                                                
+6
+ Literal h del artículo 16 del Decreto Legislativo 1501 modificatoria del Decreto Legislativo 1278 Ley de   
+
+===== PAGINA 10 =====
+9 
+ Permite reducir las incompatibilidades ambientales, al tomar en cuenta la identificación 
+de zonas potenciales para la implementación de infraestructuras de disposición final de 
+residuos sólidos considerando el uso, ocupación del territorio y su vocación natural. 
+ 
+IV. MARCO LEGAL 
+ 
+ Constitución Política del Perú, en el numeral 22 de su artículo 2, relacionado a los derechos 
+fundamentales  de  la  persona,  establece  que  toda  persona  tiene  derecho  a  la  paz,  a  la 
+tranquilidad, al disfrute del tiempo libre y al descanso, así como a gozar de un ambiente 
+equilibrado y adecuado al desarrollo de su vida. 
+ 
+ La Ley N° 28611, Ley General del Ambiente, en su artículo 67, precisa sobre el saneamiento 
+básico que “las autoridades públicas de nivel nacional, sectorial, regional y local priorizan 
+medidas   de   saneamiento   básico   que   incluyan   la  construcción   y   administración   de 
+infraestructura  apropiada;  la  gestión  y  manejo  adecuado  del  agua  potable,  las  aguas 
+pluviales,  las  aguas  subterráneas,  el  sistema  de  alcantarillado  público,  el  reúso  de  aguas 
+servidas, la disposición de excretas y los residuos sólidos, en las zonas urbanas y rurales, 
+promoviendo la universalidad, calidad y continuidad  de los servicios de saneamiento, así 
+como  el  establecimiento  de  tarifas  adecuadas  y  consistentes  con  el  costo  de  dichos 
+servicios, su administración y mejoramiento”. 
+ 
+ En  el  marco  del  Decreto  Legislativo  N°  1013,  Decreto  Legislativo  que  aprueba la Ley  de 
+creación, organización y funciones del Ministerio del Ambiente, es función específica del 
+Ministerio  del  Ambiente,  en  su  artículo  7  literal  k)  promover  y  coordinar  la  adecuada 
+gestión de residuos sólidos, la protección de la calidad del aire y el control del ruido y de 
+las radiaciones no ionizantes y sancionar su incumplimiento. 
+ 
+ Por  otro  lado,  la  Ley N°  28245,  Ley  Marco del  Sistema  Nacional  de  Gestión  Ambiental, 
+precisa  en  su  artículo  6,  literal  h),  respecto  a  los  instrumentos  de  gestión  y  planificación 
+ambiental, que el MINAM debe asegurar la transectorialidad y la debida coordinación de la 
+aplicación   de   los   instrumentos   de   gestión   y   planificación   ambiental,   a   través   del 
+establecimiento de la política, criterios, metodologías y directrices para el Ordenamiento 
+Territorial Ambiental. Asimismo, el artículo 9, señala que se modifica el artículo 4 de la Ley 
+N° 26410, en cuyo artículo 4, literal d), se precisa que el CONAM (ahora MINAM) tiene como 
+función establecer política, criterios y procedimientos para el Ordenamiento Ambiental  
+ 
+ Asimismo, el Reglamento de la Ley N° 28245, aprobado por Decreto Supremo N° 008-2005-
+PCM, precisa en su artículo 21 que, el MINAM tiene como misión institucional promover el 
+desarrollo   sostenible   propiciando   un   equilibrio   entre   el   crecimiento   económico,   la 
+protección  del  ambiente  y  el  bienestar  social,  y  su artículo  53  sobre  la  planificación  y  el 
+ordenamiento  territorial  precisa  que  la  planificación  sobre  el  uso  del  territorio  es  un 
+proceso de anticipación y toma de decisiones relacionadas con las acciones futuras en el 
+territorio,  el  cual  incluye  los  instrumentos,  criterios  y  aspectos  para  su  ordenamiento 
+ambiental.  La  asignación  de  usos  se  basa  en  la  evaluación  de  las  potencialidades  y 
+limitaciones del territorio utilizando, entre otros, criterios físicos, biológicos, ambientales, 
+sociales,  económicos  y  culturales,  mediante   el  proceso  de   zonificación  ecológica  y 
+económica. 
+ 
+ El Decreto Legislativo N° 1278, Ley de Gestión Integral de Residuos Sólidos, en su artículo 
+6,  literales m)  y  o), señala  que para la  gestión  integral  de  los  residuos  sólidos  se  debe 
+
+===== PAGINA 11 =====
+10 
+armonizar las políticas de ordenamiento territorial y las de gestión de residuos sólidos, con 
+el objeto de favorecer su manejo adecuado, así como la identificación de áreas apropiadas 
+para  la  localización  de  infraestructuras  de  residuos  sólidos,  tomando  en cuenta  las 
+necesidades actuales y las futuras, a fin de evitar la insuficiencia de los servicios; así como, 
+definir planes, programas, estrategias y acciones transectoriales para la gestión de residuos 
+sólidos,  conjugando  las  variables  económicas,  sociales,  culturales,  técnicas,  sanitarias  y 
+ambientales; respectivamente. 
+ 
+ Decreto Supremo N° 014-2017-MINAM, que aprueba el Reglamento del Decreto Legislativo 
+Nº  1278,  Ley  de  Gestión  Integral  de  Residuos  Sólidos, establece  en  su artículo  109 las 
+consideraciones a tener en cuenta para la selección de áreas para las infraestructuras de 
+disposición  final,  y  en  su artículo  110 señala  las condiciones  para  la  ubicación  de 
+infraestructuras de disposición final de residuos sólidos; mientras que en su artículo 111 
+precisa lo referido a la implementación de infraestructura de disposición final de residuos 
+sólidos cercana a aeródromos. 
+ 
+ El  Decreto  Supremo  N°  087-2004-PCM  que  aprueba  el  Reglamento  de  Zonificación 
+Ecológica y Económica (ZEE), define en su artículo 1 a la ZEE como un proceso dinámico y 
+flexible para la identificación de diferentes alternativas de uso sostenible de un territorio 
+determinado, basado en la evaluación de sus potencialidades y limitaciones con criterios 
+físicos,  biológicos,  sociales,  económicos  y  culturales.  Entre  sus  objetivos,  se  destacan:  el 
+orientar  la  formulación,  aprobación  y  aplicación  de  políticas  nacionales,  sectoriales, 
+regionales  y  locales  sobre  el  uso  sostenible  de  los  recursos  naturales  y  del  territorio,  así 
+como la gestión ambiental en concordancia con las características y potencialidades de los 
+ecosistemas,  la  conservación  del  ambiente,  y  el  bienestar  de  la  población;  y,  proveer 
+información técnica y el marco referencial para promover y orientar la inversión pública y 
+privada. 
+ 
+ Decreto Supremo N° 022-2021-MINAM, que aprueba  la Sección Primera del Reglamento 
+de  Organización  y  Funciones  del  Ministerio  del  Ambiente,  establece  en  su  artículo  54, 
+literal a) que la Dirección General de Gestión de Residuos Sólidos (DGRS) tiene, dentro de 
+sus funciones, el proponer instrumentos técnicos-normativos sobre la gestión y manejo de 
+residuos sólidos, en coordinación con las entidades competentes, según corresponda; así 
+como, el literal g) del referido artículo señala como función el dirigir la promoción de las 
+iniciativas  públicas  y  privadas,  municipales  y  no  municipales,  en  la  gestión  integral  de 
+residuos sólidos. Por otro lado, el Reglamento de Organizaciones y Funciones del Ministerio 
+del Ambiente, en su artículo 46, literal a), establece como función de la Dirección General 
+de   Ordenamiento   Territorial   y   de   la   Gestión   Integrada   de   los   Recursos   Naturales 
+(DGOTGIRN)  el  proponer  y  aprobar,  cuando  corresponda,  instrumentos  y  lineamientos 
+orientadores de carácter nacional relacionados al ordenamiento territorial en el ámbito de 
+su  competencia,  y  el  manejo  integrado  de  las  zonas  marino  costeras,  y  a  la  Gestión 
+Integrada de los Recursos Naturales, en coordinación con las entidades correspondientes.  
+ 
+ Resolución   Ministerial   N° 153-2021-MINAM,   que   aprueba   la   Sección   Segunda   del 
+Reglamento de Organización y Funciones del Ministerio del Ambiente, que establece en su 
+artículo 110, literal c) que, la Dirección de Instrumentos de Gestión de Residuos Sólidos, 
+que pertenece a la Dirección General de Gestión de Residuos Sólidos, tiene como función 
+formular  los  instrumentos  técnicos-normativos  sobre  el  manejo  de  residuos  sólidos, 
+priorizando  los  principios  de  valorización,  responsabilidad  extendida  del  productor  y 
+economía  circular,  en  el  ámbito  de  su  competencia,  en  coordinación  con  las  entidades 
+competentes, según corresponda. Por otro lado, en su artículo 88, literal a), señala que la 
+Dirección de Instrumentos para el Ordenamiento Territorial y la Gestión Integrada de los 
+
+===== PAGINA 12 =====
+11 
+Recursos  Naturales,  tiene   como  función  proponer y  aprobar,   cuando  corresponda, 
+instrumentos    y    lineamientos    orientadores    de    carácter    nacional    relacionados    al 
+ordenamiento  territorial  en  el  ámbito  de  su  competencia,  y  el  manejo  integrado  de  las 
+zonas marino costeras, y a la Gestión Integrada de los Recursos Naturales, en coordinación 
+con las entidades correspondientes.  
+ 
+V. FASES   PARA   LA   IDENTIFICACIÓN   DE   ZONAS   POTENCIALES   PARA   INFRAESTRUCTURA   DE 
+DISPOSICIÓN FINAL DE RESIDUOS SÓLIDOS MUNICIPALES  
+Este procedimiento técnico metodológico tiene como finalidad orientar la identificación de zonas 
+potenciales para  infraestructuras  de  disposición  final  de  residuos  sólidos  municipales. Para  tal 
+efecto, se considera lo dispuesto en el Reglamento del Decreto Legislativo N° 1278, cuyo artículo 
+109 contempla  los  requisitos  de  selección  de  áreas  para  infraestructura  de  disposición  final, 
+indicando que serán las municipalidades provinciales, en coordinación con las distritales, quienes 
+identificarán  espacios  geográficos  en  su  jurisdicción  para  implementar  infraestructuras  de 
+disposición final de residuos sólidos. Asimismo, en el artículo 110 contempla las condiciones para 
+su  ubicación respecto a  la  distancia  de  poblaciones, fuentes  de  aguas  superficiales, zonas  de 
+pantanos, humedales, entre otros, los cuales se detallan en las tablas 01 y 02. 
+Finalmente, en el artículo 111, se establece la implementación de infraestructura de disposición 
+final de residuos sólidos cercanas a aeródromos. 
+ 
+GRÁFICO 1.  PROCEDIMIENTO METODOLÓGICO 
+ 
+Fuente: MINAM, 2020 
+ 
+5.1. FASE INICIAL 
+Paso 1. Selección del ámbito priorizado 
+Se identifica el ámbito en el que se aplicará la metodología. Luego se precisan los indicadores 
+de brecha a fin de contribuir a las inversiones públicas y privadas alineadas a las tipologías del 
+Sector Ambiental para el cierre de brecha, los cuales pueden ser: 
+a. Porcentaje  de  población  no  atendida  por  un  adecuado  servicio  de  limpieza  pública 
+(incluye el servicio  de  disposición  final).  Este  indicador  permite  medir  directamente  la 
+brecha de calidad de capacidades para la prestación de servicios de limpieza pública y por 
+
+===== PAGINA 13 =====
+12 
+lo  tanto el  cierre  de  dicha  brecha  está  vinculado  directamente  con  la  ejecución  de 
+proyectos de inversión.  
+ 
+b. Porcentaje de hectáreas de áreas degradadas por residuos sólidos sin intervención. Este 
+indicador  permite  medir  directamente  la  brecha  de  cantidad  de  hectáreas  de  área 
+degradadas por residuos sólidos sin intervención y consiguientemente el cierre de dicha 
+brecha está vinculado directamente con la ejecución de proyectos de inversión.  
+Paso 2. Recopilación y análisis de la información 
+Se  procede  a  recopilar  y  elaborar  un  inventario  de  información  geográfica  del  tipo  físico, 
+biológico, socioeconómico y cultural, que responda a  los criterios mínimos para la selección 
+del  área  y  ubicación  de  infraestructura  de  disposición  final  de  residuos  sólidos  municipales, 
+establecidos en la normativa vigente de residuos sólidos (ver tabla 1 y 2). 
+ 
+TABLA 1. SELECCIÓN DE ÁREA PARA INFRAESTRUCTURA DE DISPOSICIÓN FINAL DE 
+RESIDUOS SÓLIDOS 
+Criterios  para  la  selección  de  área  para infraestructura  de disposición final  de  residuos 
+sólidos: 
+a) La compatibilidad con el uso del suelo y los planes de expansión urbana. 
+b) La  minimización  y  prevención  de  los  impactos  sociales,  sanitarios  y  ambientales 
+negativos,  que  se  puedan  originar  por  la  construcción,  operación  y  cierre  de  las 
+infraestructuras. 
+c) Los  factores  climáticos,  topográficos,  geológicos,  geomorfológicos,  hidrogeológicos, 
+entre otros. 
+d) Disponibilidad de material de cobertura. 
+e) La preservación del patrimonio cultural. 
+f) La preservación de áreas naturales protegidas por el Estado. 
+g) La vulnerabilidad del área ante desastres naturales. 
+h) El patrimonio nacional forestal y de fauna silvestre. 
+Fuente: Articulo 109 del Reglamento del Decreto Legislativo N° 1278, Decreto Legislativo que aprueba la Ley de         
+Gestión Integral de Residuos Sólidos, aprobado por Decreto Supremo N° 014-2017-MINAM 
+ 
+TABLA 2. CONDICIONES PARA LA UBICACIÓN DE INFRAESTRUCTURA DE DISPOSICIÓN FINAL 
+Las  infraestructuras  de  disposición  final  de  residuos  sólidos  deben  seguir  las  siguientes 
+condiciones: 
+Ubicarse  a  una  distancia  no  menor  a  500  metros  de  poblaciones,  así  como  de  granjas 
+porcinas, avícolas, entre  otras. Por excepción, y de acuerdo a lo que se establezca en el 
+IGA, la autoridad ambiental podrá permitir su ubicación a distancias menores sobre la base 
+de los potenciales riesgos para la salud o la seguridad de la población; 
+No estar ubicadas a distancias menores de 500 metros de fuentes de aguas superficiales. 
+Por  excepción  y  de  acuerdo con lo  que se establezca  en  el IGA,  la  autoridad  ambiental 
+podrá permitir su ubicación a distancias menores, considerando la delimitación de la faja 
+marginal conforme a la normativa vigente de la materia; 
+
+===== PAGINA 14 =====
+13 
+Las  infraestructuras  de  disposición  final  de  residuos  sólidos  deben  seguir  las  siguientes 
+condiciones: 
+No estar ubicada en zonas de pantanos, humedales o recarga de acuíferos en la zona de 
+emplazamiento del proyecto; 
+No estar ubicada en zonas con presencia de fallas geológicas; 
+No estar ubicada en zonas donde se puedan generar asentamientos o deslizamientos que 
+desestabilicen la integridad de la infraestructura de residuos sólidos; otros que establezca 
+la normatividad sobre la materia; 
+Fuente: Articulo 110 del Reglamento del Decreto Legislativo N° 1278, Decreto Legislativo que aprueba la Ley de         
+Gestión Integral de Residuos Sólidos, aprobado por Decreto Supremo N° 014-2017-MINAM, Decreto Supremo N° 
+029-2007-AG. 
+ 
+Las infraestructuras  de  disposición  final  de  residuos  sólidos  deben  seguir  las  siguientes 
+condiciones: 
+Para el caso de ubicación de una infraestructura de disposición final cercana a aeródromos 
+se debe considerar 13 km de radio con centro en el punto de referencia del aeródromo. 
+Cuando se planifique la ubicación de un relleno sanitario tecnificado a una distancia mayor 
+de 4 km del punto de referencia del aeródromo pero menor de un radio de 13 km y fuera 
+del área que conforman dos líneas paralelas a la proyección del eje de pista ubicadas a 4 
+km  a  cada  lado  del  eje  proyectado (ver  gráfico  02), se  deberá  contar  con  la  opinión 
+favorable   de   la   Dirección   General   de   Aeronáutica   Civil   (DGAC)   del   Ministerio   de 
+Transportes y Comunicaciones, debiendo presentar ante la DGAC un estudio de Riesgo de 
+la Seguridad Operacional. 
+ 
+Fuentes: Articulo 111 del Reglamento del Decreto Legislativo N° 1278, Decreto Legislativo que aprueba la Ley de         
+Gestión Integral de Residuos Sólidos, aprobado por Decreto Supremo N° 014-2017-MINAM, Resolución Directoral 
+N° 375-2013-MTC/12 
+ 
+GRÁFICO 2. ÁREA DE SEGURIDAD DE 13 KM DE RADIO 
+ 
+Fuentes: Resolución Directoral N° 375-2013-MTC/12 
+ 
+Paso 3. Generación y adecuación de la información cartográfica 
+La  información  recopilada  para  aplicar  la  presente  guía  metodológica  puede  provenir  de 
+distintas fuentes del sector público y/o privado, o través de la revisión de otros documentos 
+de gestión territorial como el Plan de Acondicionamiento Territorial, Plan Provincial de Gestión 
+
+===== PAGINA 15 =====
+14 
+Integral  de  Manejo  de  Residuos  Sólidos  Municipales, Plan  Distrital  de  Manejo  de  Residuos 
+Sólidos Municipales, Plan de Desarrollo Urbano, la Zonificación Ecológica y Económica, entre 
+otros. Dada la multiplicidad de información a diferentes escalas, formatos, exactitud y detalle, 
+es importante que se analice previamente la calidad de la data y la pertinencia de la misma, 
+para  luego  pasar  por  un  proceso  de  estandarización  y  acondicionamiento  cartográfico,  de 
+acuerdo con el nivel de escala del trabajo. 
+ 
+TABLA 3. INVENTARIO DE INFORMACIÓN GEOESPACIAL DE ENTIDADES PÚBLICAS 
+Variables Detalle Fuente 
+Mosaico satelital 
+RapidEye, Spot, PeruSAT-1, 
+otros de mediana resolución 
+espacial. 
+MINAM, CONIDA 
+Límites Límite Político Administrativo INEI, gobierno regional 
+Centro poblado Centro poblado, ciudades INEI, gobierno local  
+Vías 
+Nacional, departamental y 
+vecinal 
+MTC, imágenes 
+satelitales 
+Curvas de nivel Curva principal y secundaria IGN 
+Granjas  Granjas avícolas y porcinas SENASA 
+Hidrografía Ríos, quebradas, lagunas, etc. ANA 
+Áreas naturales 
+protegidas 
+ANP, ACR SERNANP 
+Patrimonio Cultural Sitios arqueológicos, etc. MINCUL 
+Toponimia terrestre 
+Cerros, ríos, quebradas, playas, 
+etc. 
+IGN 
+Cobertura Vegetal Tipo de Vegetación MINAM 
+Geología Fallas geológicas, litología INGEMMET 
+Concesiones Mineras y Petroleras 
+INGEMMET 
+PERUPETRO 
+Acuíferos Acuíferos ANA 
+Forestales 
+Concesiones Forestales, Bosque 
+de Producción Permanente, 
+Ecosistemas Frágiles 
+SERFOR 
+Áreas agrícolas Cobertura agraria MIDAGRI 
+Residuos sólidos 
+Áreas degradadas por residuos 
+sólidos 
+Infraestructura Sanitaria 
+OEFA, MINAM 
+Fuente: MINAM, 2020 
+ 
+ 
+ 
+
+===== PAGINA 16 =====
+15 
+Paso 4. Generación de base de datos 
+Tomando  como  base  la  información  obtenida  y  la adecuación según  el  nivel  de  escala,  los 
+elementos geográficos se organizan en una base de datos que va a contener los nombres de 
+las entidades geográficas, los atributos y la descripción. Es decir, en este paso se generará y 
+organizará la base de datos geoespacial, la cual estará acompañada con el diccionario de datos 
+y la metadata
+7
+.  
+ 
+TABLA 4. DICCIONARIO DE DATOS 
+Entidad 
+Tipo de 
+Entidad 
+Atributo Descripción 
+Red Hidrográfica Línea 
+Nom_ri 
+Tipo_ri 
+Nombre del río 
+Tipo de río 
+Fisiografía Polígono 
+Prov_Fisio 
+Uni_Clima 
+Gran_Paisa 
+Sub_Paisa 
+Ele_Paisa 
+Provincia fisiográfica 
+Unidad climática 
+Gran paisaje 
+Sub paisaje 
+Elemento de paisaje 
+   Fuente: MINAM, 2020 
+5.2. FASE DE ANÁLISIS ESPACIAL 
+Paso 1. Espacialización de las restricciones y exclusiones 
+Se  identifican las  variables  temáticas  tomando  como  base  la información  cartográfica 
+existente  y  los  requisitos  y  condiciones  establecidas  en  la normatividad  vigente,  las  cuales 
+formarán parte de las restricciones y exclusiones, las que se detallan a continuación: 
+ 
+TABLA 5. DEFINICIÓN DE VARIABLES TEMÁTICAS QUE FORMAN PARTE DE LAS 
+RESTRICCIONES Y EXCLUSIONES DEL MODELO 
+Requisito de localización Variables 
+Restricciones 
+- Centros poblados 
+- Aeródromos 
+- Fuentes  de  aguas  superficiales  (cauce de 
+ríos, lagos y lagunas) 
+- Granjas porcinas y avícolas 
+- Áreas agrícolas 
+- Fallas geológicas 
+- Pendientes 
+- Infraestructura existentes (embalses, 
+represas, obras hidroeléctricas, etc.) 
+                                                
+   
+7
+ Grupo de datos que describen el contenido informativo de un objeto 
+
+===== PAGINA 17 =====
+16 
+Requisito de localización Variables 
+Exclusiones 
+- Áreas Naturales Protegidas 
+- Peligros  por  inundación  y  remoción  en 
+masa 
+- Zonas  de  pantanos,  humedales  o  recarga 
+de acuíferos 
+- Faja marginal 
+- Franja marino-costera 
+- Patrimonio cultural 
+- Concesiones     mineras,     petroleras     (en 
+explotación) 
+- Concesiones forestales 
+- Comunidades campesinas y nativas* 
+* Se deberá tener una consideración especial de esta variable en la fase de evaluación 
+Fuente: MINAM, 2020 
+ 
+Es pertinente  mencionar  que  determinar  las  condiciones  óptimas  del  terreno  considerando 
+aspectos  del  tipo  físico,  biológico, socioeconómico y  cultural, es  clave  por  los  siguientes 
+motivos: 
+ 
+i) Si bien la infraestructura de disposición final de residuos sólidos se puede  diseñar y 
+operar  en  cualquier topografía, se  recomienda elegir el área  donde  se  pueda 
+aprovechar para confinar un mayor volumen de residuos, por lo que se debe preferir 
+lugares con superficies planas o con pendientes moderadas para realizar la disposición 
+final. 
+ 
+ii) Un contaminante puede penetrar al suelo y llegar al acuífero, contaminándolo. Por lo 
+tanto,  es  muy  importante  conocer  la litología del  sitio  para  la  infraestructura  de 
+disposición final. Los suelos sedimentarios con características areno - arcillosas son los 
+más  recomendables  ya  que  son  suelos  poco  permeables,  por eso la  infiltración  de 
+líquido contaminante se reduce sustancialmente, siendo además idóneos para usarlos 
+como material de cobertura. 
+ 
+iii) La  inadecuada  identificación  del  área  del  terreno  puede  contaminar  reservorios  de 
+aguas que están ubicados debajo de la superficie terrestre (acuíferos); en ese sentido, 
+la  información  secundaria  será  importante  para  determinar  la  existencia  de  agua 
+subterránea. 
+ 
+iv) La infraestructura de disposición final de residuos sólidos en una ubicación inadecuada 
+puede  verse  afectada por  fallas  geológicas,  deslizamientos e inundaciones.  El  área 
+evaluada debe ser estable, no registrar antecedentes de inundaciones, derrumbes o 
+deslizamientos  de   lodos  y  piedras;   por  ese  motivo  es   importante  contar  con 
+información  secundaria  que   ayude   a  excluir  aquellas  zonas  de   riesgo  ante  la 
+probabilidad de ocurrencia de peligros naturales. 
+ 
+v) El área del terreno no debe estar ubicada en zonas arqueológicas, a fin de conservar y 
+preservar el patrimonio cultural, por tal motivo es importante contar con el certificado 
+de inexistencia de restos arqueológicos (CIRA). 
+
+===== PAGINA 18 =====
+17 
+ 
+vi) La identificación del lugar no debe afectar un Área Natural Protegida (ANP) (parques 
+nacionales,  reservas  nacionales,  zonas  de  amortiguamiento,  entre  otros)  a  fin  de 
+conservar estas  áreas.  La  información secundaria,  en  un  primer  momento,  puede 
+determinar la superposición total o parcial del área de terreno en alguna ANP.   
+ 
+Paso 2. Identificación preliminar de áreas potenciales para IRS 
+Se consolida  la  información recopilada  o  generada  que  se  utilizará  en el  modelamiento 
+cartográfico,  tomando  en  cuenta  los  límites  permisibles  establecidos  en  los  criterios  de 
+ubicación de infraestructuras de residuos sólidos municipales. 
+TABLA 6. CONSOLIDACIÓN DE LA INFORMACIÓN TEMÁTICA REQUERIDA PARA EL 
+MODELAMIENTO CARTOGRÁFICO 
+Requisitos de localización Límites permisibles 
+Restricciones 
+Distancia a centros poblados ≥ 500 m 
+Distancia a Infraestructuras existen (embalses, represas, 
+obras hidroeléctricas, etc.) 
+≥ 500 m 
+Distancia a aeródromos 4km ≥ RS ≥ 13 km 
+Distancia  a  fuentes  de  agua  superficiales  (cauce  de  río, 
+lagos y lagunas) 
+≥ 500 m 
+Distancia   a   granjas   porcinas,   avícolas y animales 
+menores* 
+entre 5 y 10 km 
+Distancia a áreas agrícolas ≥ 500 m 
+Distancia a Fallas geológicas ≥ 1 km 
+Pendientes** <25 % 
+Exclusiones 
+Peligros o susceptibilidad por inundación y movimientos 
+en masa 
+- 
+Áreas Naturales Protegidas - 
+Zonas de pantanos, humedales o recarga de acuíferos - 
+Faja Marginal - 
+Franja marino-costera - 
+Patrimonio cultural - 
+
+===== PAGINA 19 =====
+18 
+Concesiones mineras, petroleras (en explotación) - 
+Concesiones forestales - 
+Comunidades campesinas y nativas - 
+*  Según  lo  establecido  en  el  Anexo  2,  Artículo  52°  del  Reglamento  del  Sistema  Sanitario 
+Avícola, aprobado por Decreto Supremo N° 029-2007-AG. 
+** Podría existir una flexibilidad al aplicar el criterio de 25% de pendiente, esto dependerá del 
+relieve del territorio que se verificará en la etapa de campo. 
+Fuente: MINAM, 2020 
+Luego se realiza el modelamiento cartográfico
+8
+, el cual debe presentar una secuencia lógica 
+de  operaciones  y funciones  de  análisis  espacial,  de  tal  manera  que  permita  identificar 
+preliminarmente las condiciones óptimas de ubicación de la IRS, partiendo de la evaluación de 
+la  información  cartográfica  disponible, y  considerando  los  requisitos  de  localización,  de 
+acuerdo con la normativa de residuos sólidos (ver gráfico 03). 
+A fin de obtener mayores posibilidades de zonas potenciales es importante volver a analizar 
+las  variables   de   las  comunidades   campesinas  y  nativas,  esta  vez  en  términos  de su 
+superposición  con  las  zonas  potenciales  previamente  identificas,  con  lo  cual,  en  la  fase  de 
+evaluación  podría  gestionarse,  bajo  los  marcos  legales  existentes,  el  uso  de  los  terrenos  de 
+propiedad comunal. 
+De este modo, no solo se identifica las zonas potenciales, las cuales cumplen de forma estricta 
+los criterios de restricción y exclusión del procedimiento, sino que se identifican otras zonas 
+potenciales donde se podrían implementar infraestructuras  de residuos sólidos municipales 
+previo estudio tecnificado y/o análisis de la superposición con derechos de uso o propiedad. 
+Respecto a la leyenda final del mapa de zonas potenciales para infraestructura de disposición 
+final de residuos sólidos municipales, dependiendo de las particularidades de cada territorio, 
+considerar como parte del resultado del análisis de las restricciones: 
+ Las  zonas  donde  se  podría  establecer  un IDF tecnificado,  previa  presentación  de  un 
+estudio de riesgo de la seguridad operacional (aeródromo). 
+Respecto a los resultados del análisis de exclusiones, considerar: 
+ Las  zonas  donde  se  podría  establecer  un IDF, previa  adaptación  a  la  tecnología 
+(medidas estructurales para el cuidado del recurso hídrico del acuífero).   
+ Las  zonas  donde  se  podría  establecer  un IDF,  previo  análisis  de  la  superposición 
+existente con derechos de uso por concesión minera (subsuelo). 
+ Las  zonas  donde  se  podría  establecer  un IDF,  previo  análisis  de  la  superposición 
+existente con comunidades campesinas o nativas. 
+ Las  zonas  donde  se  podría  establecer  un IDF,  previo análisis  de  la  superposición 
+existente con concesiones mineras o petroleras. 
+ Las  zonas  donde  se  podría  establecer  un IDF previa  adaptación  a  la  tecnología 
+(medidas estructurales para el cuidado del recurso hídrico del acuífero) y análisis de la 
+superposición existente con derechos de uso por concesión minera (subsuelo).   
+ 
+                                                
+8 
+Se  entiende  como  el  procedimiento  sistémico  de  análisis  utilizando  los  Sistemas  de  Información 
+Geográfica (SIG) sobre información georeferenciada para el estudio del espacio geográfico. 
+ 
+
+===== PAGINA 20 =====
+19 
+GRÁFICO 3. ESQUEMA MODELOMIENTO ESPACIAL 
+ 
+Fuente: MINAM, 2020 
+ 
+5.3. FASE DE EVALUACIÓN 
+ 
+Paso1. Evaluación y selección de alternativas 
+Hasta aquí se cuenta con la información producto de la aplicación del modelo cartográfico, el 
+cual basa su análisis desde el punto de vista físico, biológico, social, económico y cultural del 
+territorio vinculado a las exclusiones y restricciones técnicas y normativas. 
+A partir de dicha información, el equipo técnico evaluará la mejor alternativa de localización 
+para  la  instalación  de  una  infraestructura  de  residuos  sólidos,  tomando  en  cuenta,  sin  ser 
+restrictivos, los siguientes factores: 
+A. Vía de acceso 
+La ubicación  de  la  infraestructura  de  disposición  final  de  residuos  sólidos  debe  estar  a  una 
+distancia accesible, el cual permita manejar los costos para la operación de transporte desde 
+la  fuente  de  generación  (población  beneficiaria)  hasta  la  infraestructura.  Deben  estar 
+conectadas  mediante  una  vía  de  acceso  priorizando  la  cercanía  a  vía  principales  como 
+carreteras,  o  como  mínimo  ser una vía  no  pavimentada  (trocha  carrozable  o  afirmado) 
+transitable en toda la época del año. 
+B. Factores climáticos 
+Se  debe conocer  las  condiciones  meteorológicas  de  precipitación,  temperatura  y  humedad 
+relativa, y analizar de qué manera estos van a influir en los procesos de degradación de los 
+residuos. Asimismo, analizar la dirección del viento predominante en función a las molestias 
+que puede causar tanto la operación, por el polvo y papeles que se elevan en el aire, como por 
+el posible transporte de malos olores a las áreas colindantes. 
+C. Propiedad del terreno 
+Es  importante  contar  con  información  de  las  propiedades  o  posesiones  sobre  las  áreas 
+potenciales de terreno para ubicación de infraestructura de residuos sólidos. 
+ 
+
+===== PAGINA 21 =====
+20 
+D. Saneamiento físico legal del terreno 
+El terreno destinado para la infraestructura de disposición final de residuos sólidos tendrá que 
+estar inscrito en los registros públicos a nombre del gobierno local que implementará dicha 
+infraestructura  de  disposición  final.  Asimismo,  este  debe  encontrarse  libre  de  carga  y/o 
+gravamen que pueda afectar la titularidad de dicha entidad, sobre el predio en donde se va a 
+construir la infraestructura de disposición final y por el tiempo que implique su manejo. 
+E.  Compatibilización con el uso del suelo y planes de expansión urbana 
+El área donde se ubicará la infraestructura de disposición final de residuos sólidos deberá estar 
+acorde con   los   proyectos   de   expansión   urbana   de   la población, Asimismo, se   debe 
+compatibilizar  con  el  uso  de  suelos,  tomando en  cuenta  si  está  contemplado  en  el  plan  de 
+desarrollo  urbano (PDU) distrital  o  el  plan  de  acondicionamiento  territorial (PAT) de  los 
+gobiernos provinciales. 
+Paso 2. Validación de las alternativas 
+Consiste  en  evaluar  las  áreas  potenciales  seleccionadas  realizando  un  reconocimiento  en 
+campo  a  fin  de  contrastar  la  exactitud  temática  del  modelo  cartográfico  en  el  terreno, 
+teniendo en consideración los criterios mínimos señalados en el presente documento. 
+El uso de las imágenes de satélite complementa el trabajo de campo, ya que son un respaldo 
+a la hora de validar las condiciones físicas del terreno seleccionado.  
+Las áreas seleccionadas serán interpretadas a partir de un análisis visual de manera detallada. 
+En  ese  sentido, la  interpretación  visual  resulta  complementaria al  proceso  de  validación  de 
+campo. 
+Dentro del proceso de validación, es determinante que el área de terreno seleccionada para 
+la  construcción  de  la  infraestructura  de  disposición  final  de  residuos  sólidos  tenga  la 
+aprobación de la población beneficiada, así como de la población colindante al terreno, para 
+evitar posibles conflictos sociales a corto o largo plazo. Por este motivo el titular que ejecutará 
+el  proyecto  deberá  desarrollar  talleres  participativos  e  informativos  para  toda  la población 
+Esto se  evidenciará  mediante  documentos  que  acrediten  la  participación y asistencia  de 
+población  a  talleres  informativos  y  reuniones  con  especialistas  (actas,  encuestas,  listas  de 
+asistencia, etc.). 
+ 
+5.4. CASO DE APLICACIÓN 
+ 
+FASE INICIAL 
+ 
+Aplicación de la metodología en el ámbito del departamento de Arequipa 
+Paso 1. Selección del ámbito priorizado 
+Se identificó el departamento de Arequipa para la aplicación de la metodología, teniendo en 
+consideración el indicador de brecha Porcentaje de población no atendida por un adecuado 
+servicio  de  limpieza  pública  (incluye  el  servicio  de disposición  final) a  fin  de  contribuir  a  las 
+inversiones públicas y privadas alineadas a las tipologías del Sector Ambiental para el cierre de 
+brecha. 
+Paso 2. Recopilación y análisis de la información 
+Se realizó la consulta y descarga de la información cartográfica del aspecto físico, biológico, 
+social, económico y cultural de las diversas plataformas de sistemas de información geográfica 
+de los diferentes sectores. 
+
+===== PAGINA 22 =====
+21 
+ 
+GRÁFICO 4. BUSQUEDA DE INFORMACIÓN EN LAS DIVERSAS PLATAFORMAS DE SISTEMAS 
+DE INFORMACIÓN GEOGRÁFICA 
+ 
+Así  mismo  a partir  de la  información cartográfica generada y  aprobada en  la  Zonificación 
+Ecológica  y  Económica  del  departamento  de  Arequipa,  se  procedió a  recopilar,  analizar y 
+elaborar un inventario de información geográfica del tipo físico, biológico, socioeconómico y 
+cultural,  que  responda  a  los  criterios  mínimos  para  la  selección  del  área  y  ubicación  de 
+infraestructura  de  disposición  final  de  residuos  sólidos  municipales, establecidos  en  la 
+normativa vigente de residuos sólidos. (ver tabla 1, 2 y gráfico 2). 
+ 
+TABLA 7. INVENTARIO DE INFORMACIÓN GEOESPACIAL DE ENTIDADES PÚBLICAS 
+Variables Detalle Fuente 
+Mosaico satelital 
+RapidEye, Spot, PeruSAT-1, 
+otros de mediana resolución 
+espacial. 
+MINAM, CONIDA 
+Límites Limite Político Administrativo INEI, gobierno regional 
+Vías 
+Nacional, departamental y 
+vecinal 
+MTC, gobierno regional 
+Centro poblado Centro poblado, ciudades INEI, gobierno local  
+Aeródromo Aeródromo MTC 
+Hidrografía Ríos, quebradas, lagunas, etc. ANA, gobierno regional 
+Granja avícola Granja avícola y porcina SENASA 
+Uso actual del suelo Áreas agrícolas 
+MIDAGRI, gobierno 
+regional 
+Falla geológica Falla geológica 
+INGEMMET, gobierno 
+regional 
+
+===== PAGINA 23 =====
+22 
+Variables Detalle Fuente 
+Pendientes Pendientes 
+MIDAGRI, gobierno 
+regional 
+Áreas naturales 
+protegidas 
+ANP, ACR SERNANP 
+Peligros de inundación 
+y movimientos en 
+masa 
+Peligros de inundación y 
+movimientos en masa 
+INGEMMET, gobierno 
+regional 
+Humedales Humedales 
+Geoservidor, gobierno 
+regional 
+Acuíferos Acuíferos ANA, gobierno regional 
+Faja marginal de ríos Faja marginal de ríos ANA, gobierno regional 
+Franja marino costera Franja marino costera Geoservidor 
+Patrimonio Cultural Sitios arqueológicos, etc. MINCUL 
+Concesiones Concesiones Mineras INGEMMET 
+Comunidades 
+campesinas 
+Comunidades campesinas Gobierno regional 
+Fuente: MINAM, 2021 
+ 
+TABLA 8. SISTEMATIZACIÓN DE INFORMACIÓN PARA LA APLICACIÓN DEL MODELO DE 
+IDENTIFICACIÓN DE ZONAS POTENCIALES PARA INFRAESTRUCTURA DE DISPOSICIÓN FINAL 
+DE RESIDUOS SÓLIDOS MUNICIPALES 
+ 
+Fuente: MINAM, 2021 
+Paso 3. Generación y adecuación de la información cartográfica 
+La  información cartográfica  y  literal recopilada  de  las  diversas  plataformas de  sistemas  de 
+información  geográfica y  de  la  zonificación  ecológica  y  económica del  departamento  de 
+Arequipa pasaron por un previo análisis de la calidad de la data para que posteriormente se 
+
+===== PAGINA 24 =====
+23 
+pase por   un   proceso   de   acondicionamiento   cartográfico, es   decir   se   ha delineado, 
+uniformizado y adecuado la información cartografía sobre la imagen de satélite.      
+GRÁFICO 5. ACONDICIONAMIENTO CARTOGRÁFICO DE ÁREAS AGRÍCOLAS 
+ 
+Fuente: MINAM, 2021 
+Paso 4. Generación de base de datos 
+En base a  la  información  obtenida  y  la  adecuación  según  el  nivel  de  escala,  los  elementos 
+geográficos  se  organizaron en  una  base  de  datos  que  va  a  contener  los  nombres  de  las 
+entidades geográficas, los atributos y la descripción; es decir, en este paso se generó y organizó 
+la  base  de  datos  geoespacial,  la  cual  está acompañada  con  el  diccionario  de  datos  y  la 
+metadata
+9
+.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                
+   
+9
+ Grupo de datos que describen el contenido informativo de un objeto 
+
+===== PAGINA 25 =====
+24 
+GRÁFICO 6. ORGANIZACIÓN DE LA BASE DE DATOS GEOESPACIAL 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+TABLA 9. DICCIONARIO DE DATOS 
+Entidad 
+Tipo de 
+Entidad 
+Atributo Descripción 
+Centro poblado Punto 
+Nom_ccpp 
+ 
+Nombre de centro poblado 
+ 
+Cauce de río Polígono 
+Nom_rio 
+ 
+Nombre de cauce de río 
+ 
+Fuente: MINAM, 2020 
+ 
+FASE DE ANÁLISIS ESPACIAL 
+Paso 1. Espacialización de las restricciones y exclusiones 
+Para  el  caso  del  departamento  de  Arequipa,  se  identificó las  variables  temáticas  tomando 
+como base la información cartográfica existente y los requisitos y condiciones establecidas en 
+la normatividad vigente, las cuales forman parte de las restricciones y exclusiones del modelo, 
+las que se detallan a continuación: 
+ 
+ 
+ 
+ 
+
+===== PAGINA 26 =====
+25 
+TABLA 10. DEFINICIÓN DE VARIABLES TEMÁTICAS QUE FORMAN PARTE DE LAS 
+RESTRICCIONES Y EXCLUSIONES DEL MODELO 
+Restricciones/Exclusiones Variables 
+Restricciones 
+- Centros poblados 
+- Aeródromo 
+- Fuentes  de  aguas  superficiales  (cauce  de 
+ríos, lagos y lagunas) 
+- Granjas avícolas 
+- Áreas agrícolas 
+- Fallas geológicas 
+- Pendientes 
+Exclusiones 
+- Áreas Naturales Protegidas 
+- Peligros  por  inundación  y  remoción  en 
+masa 
+- Humedales 
+- Zona de recarga de acuíferos 
+- Faja marginal de ríos 
+- Franja marino-costera 
+- Patrimonio cultural 
+- Concesiones mineras (en explotación) 
+- Comunidades campesinas 
+     Fuente: MINAM, 2020 
+Espacialización de las restricciones 
+Se procedido  a generar  los radios de  influencia para  cada  variable  del  grupo  de  las 
+restricciones, tomando en consideración los criterios técnicos y normativos. Como parte del 
+proceso de modelamiento espacial se ha realizado la integración de las variables temáticas del 
+grupo  de las  restricciones, así  mismo se ha utilizado  la  secuencia  lógica  de  operaciones  y 
+funciones de análisis espacial del esquema de modelamiento espacial para identificar las zonas 
+con restricción, zonas sin restricción y otras alternativas donde se podría establecer un relleno 
+sanitario.  
+ 
+TABLA 11. CONSOLIDACIÓN DE LA INFORMACIÓN TEMÁTICA REQUERIDA PARA EL ANÁLISIS 
+DE LAS RESTRICCIONES - AREQUIPA 
+Requisitos de localización Límites permisibles 
+Distancia a centros poblados ≥ 500 m 
+Distancia a aeródromos 4km ≥ RS ≥ 13 km 
+Distancia a fuentes de agua superficiales 
+(cauce de rio, lagos y lagunas) 
+≥ 500 m 
+ 
+Distancia a granjas avícolas   5 a 10 km 
+Distancia a áreas agrícolas ≥ 500 m 
+ 
+Distancia a Fallas geológicas 1 km 
+Pendientes Muy empinado a Extremadamente 
+empinado 
+
+===== PAGINA 27 =====
+26 
+ 
+GRÁFICO 7. UBICACIÓN DE CENTROS POBLADOS 
+ 
+ 
+ 
+GRÁFICO 8. ÁMBITO DE INFLUENCIA A CENTROS POBLADOS 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+===== PAGINA 28 =====
+27 
+GRÁFICO 9. UBICACIÓN DE CAUCE DE RIOS Y LAGUNAS 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+GRÁFICO 10. ÁMBITO DE INFLUENCIA A CAUCE DE RIOS Y LAGUNAS 
+ 
+ 
+ 
+ 
+
+===== PAGINA 29 =====
+28 
+GRÁFICO 11. UBICACIÓN Y ÁMBITO DE INFLUENCIA DE GRANJAS AVÍCOLAS 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+GRÁFICO 12. UBICACIÓN Y AMBITO DE INFLUENCIA DE ÁREAS AGRÍCOLAS 
+ 
+ 
+ 
+ 
+
+===== PAGINA 30 =====
+29 
+GRÁFICO 13. ESPACIALIZACIÓN DE PENDIENTES 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+GRÁFICO 14. UBICACIÓN Y ÁMBITO DE INFLUENCIA DE FALLAS GEOLÓGICAS 
+ 
+ 
+ 
+ 
+
+===== PAGINA 31 =====
+30 
+GRÁFICO 15. UBICACIÓN Y ÁMBITO DE INFLUENCIA DE AERÓDROMO 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+GRÁFICO 16. ZONAS SIN RESTRICCIONES 
+ 
+ 
+ 
+ 
+
+===== PAGINA 32 =====
+31 
+GRÁFICO 17. RESULTADO DE ANÁLIS DE RESTRICCIONES 
+ 
+ 
+ 
+ 
+ 
+Espacialización de las exclusiones 
+Una vez verificada las variables que corresponden al grupo de las exclusiones para el caso del 
+departamento de Arequipa, se ha procedido a generar la integración de las mismas, tomando 
+en consideración los criterios técnicos referente a las exclusiones. Como parte del proceso de 
+modelamiento espacial se ha realizado la integración de las variables temáticas del grupo de 
+las exclusiones, así mismo se ha utilizado la secuencia lógica de operaciones y funciones de 
+análisis  espacial del  esquema  de  modelamiento  espacial para  identificar  las  zonas con 
+exclusión, zonas sin  exclusión  y  otras  alternativas donde  se  podría  establecer  un  relleno 
+sanitario.  
+ 
+TABLA 12. CONSOLIDACIÓN DE LA INFORMACIÓN TEMÁTICA REQUERIDA PARA EL ANÁLIS 
+DE LAS EXCLUSIONES - AREQUIPA 
+ 
+Variables de exclusiones 
+Áreas Naturales Protegidas 
+Peligros, susceptibilidad por inundación y movimientos en masa 
+Zonas de pantanos, humedales o recarga de acuíferos 
+Faja Marginal 
+Franja Marino Costera 
+Patrimonio cultural 
+Concesiones mineras, petroleras. (En explotación) 
+Comunidades campesinas 
+ 
+ 
+
+===== PAGINA 33 =====
+32 
+ 
+ 
+GRÁFICO 18. ESPACIALIZACIÓN DE ÁREAS NATURALES PROTEGIDAS 
+ 
+ 
+ 
+ 
+GRÁFICO 19. ESPACIALIZACIÓN DE PELIGROS POR MOVIMIENTOS EN MASA 
+ 
+ 
+ 
+ 
+ 
+  
+
+===== PAGINA 34 =====
+33 
+GRÁFICO 20. ESPACIALIZACIÓN DE PELIGROS POR INUNDACIÓN 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+GRÁFICO 21. ESPACIALIZACIÓN DE PELIGROS POR INUNDACIÓN Y MOVIMIENTOS EN MASA 
+ 
+ 
+ 
+ 
+ 
+
+===== PAGINA 35 =====
+34 
+GRÁFICO 22. ESPACIALIZACIÓN DE BOFEDAL 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+GRÁFICO 23. ESPACIALIZACIÓN DE ACUÍFEROS 
+ 
+ 
+ 
+ 
+ 
+
+===== PAGINA 36 =====
+35 
+GRÁFICO 24. ESPACIALIZACIÓN DE FAJA MARGINAL DE RÍOS 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+GRÁFICO 25. ESPACIALIZACIÓN DE FRANJA MARINO COSTERA 
+ 
+ 
+ 
+ 
+  
+
+===== PAGINA 37 =====
+36 
+GRÁFICO 26. ESPACIALIZACIÓN DE SITIOS ARQUEOLÓGICOS 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+GRÁFICO 27. ESPACIALIZACIÓN DE COMUNIDADES CAMPESINAS 
+ 
+ 
+ 
+ 
+
+===== PAGINA 38 =====
+37 
+GRÁFICO 28. ESPACIALIZACIÓN DE CONCESIONES MINERAS 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+GRÁFICO 29. ZONAS SIN EXCLUSIONES 
+ 
+ 
+ 
+ 
+
+===== PAGINA 39 =====
+38 
+GRÁFICO 30. RESULTADO DEL ANÁLISIS DE LAS EXCLUSIONES 
+ 
+ 
+ 
+ 
+Paso 2. Identificación preliminar de áreas potenciales para IRS 
+Teniendo el resultado del análisis e integración del grupo de las restricciones y exclusiones, se 
+procedió a realizar una tercera integración como parte del proceso de modelamiento espacial, 
+tomando  en  cuenta  los límites  permisibles  establecidos  en  los  criterios  de  ubicación  de 
+infraestructuras de residuos sólidos municipales. 
+TABLA 13. CONSOLIDACIÓN DE LA INFORMACIÓN TEMÁTICA REQUERIDA PARA EL 
+MODELAMIENTO CARTOGRÁFICO 
+Requisitos de localización Límites permisibles 
+Restricciones 
+Distancia a centros poblados ≥ 500 m 
+Distancia a aeródromos 4km ≥ RS ≥ 13 km 
+Distancia  a  fuentes  de  agua  superficiales  (cauce  de  río, 
+lagos y lagunas) 
+≥ 500 m 
+Distancia a granjas avícolas * entre 5 y 10 km 
+Distancia a áreas agrícolas ≥ 500 m 
+Distancia a fallas geológicas ≥ 1 km 
+Pendientes** <25 % 
+
+===== PAGINA 40 =====
+39 
+Exclusiones 
+Peligros o susceptibilidad por inundación y movimientos 
+en masa 
+- 
+Áreas Naturales Protegidas - 
+Zonas de pantanos, humedales o recarga de acuíferos - 
+Faja Marginal - 
+Franja marino-costera - 
+Patrimonio cultural - 
+Concesiones mineras (en explotación) - 
+Comunidades campesinas - 
+* Según lo establecido en el Anexo 2, Artículo 52 del Reglamento del Sistema Sanitario Avícola, 
+aprobado por Decreto Supremo N° 029-2007-AG. 
+** Podría existir una flexibilidad al aplicar el criterio de 25% de pendiente, esto dependerá del 
+relieve del territorio que se verificará en la etapa de campo. 
+Fuente: MINAM, 2020 
+ 
+GRÁFICO 31. PROPUESTA DE ZONAS POTENCIALES PARA INFRAESTRUCTURA DE 
+DISPOSICIÓN FINAL DE RESIDUOS SÓLIDOS MUNICIPALES DEL DEPARTAMENTO DE 
+AREQUIPA 
+ 
+ 
+ 
+ 
+
+===== PAGINA 41 =====
+40 
+FASE DE EVALUACIÓN 
+ 
+Paso 1. Evaluación y selección de alternativas 
+Teniendo  el  resultado de  aplicación  del  modelo  de  identificación  de  zonas  potenciales  para 
+infraestructura  de  disposición  final  de  residuos  sólidos municipales en  gabinete, el  equipo 
+técnico del  gobierno  local evaluará a  través  de  trabajo  de  campo la  mejor  alternativa  de 
+localización para la instalación de una infraestructura de residuos sólidos, tomando en cuenta 
+los  siguientes  factores (sin  ser  restrictivos): vías  de  acceso,  factor  climático,  propiedad  del 
+terreno, saneamiento físico legal del terreno y compatibilización con el uso del suelo y planes 
+de expansión urbana.     
+ 
+GRÁFICO 32. DETALLE DE LOS RESULTADOS EN LA PROVINCIA DE AREQUIPA 
+ 
+ 
+ 
+Paso 2. Validación de las alternativas 
+El resultado  final  muestra  7  alternativas de áreas potenciales para  la  implementación  de 
+infraestructura  de  disposición  final  de  residuos  sólidos  municipales; el  equipo  técnico  del 
+gobierno  local  realizará  un  reconocimiento  en  campo de  estas  7  alternativas, a  fin  de 
+contrastar   la   exactitud   temática   del   modelo   cartográfico   en   el   terreno,   teniendo   en 
+consideración los criterios mínimos señalados en el presente documento. 
+Asimismo, se han identificado 7 zonas donde se podría establecer un relleno sanitario previa 
+presentación de un informe o estudio solicitado por la autoridad competente en el marco de 
+la  normatividad  vigente (caso  aeródromo,  población,  fuentes  de  aguas  superficiales,  entre 
+otros).  
+Se deberán utilizar las imágenes de satélite para complementar el trabajo de campo, ya que 
+son un respaldo a la hora de validar las condiciones físicas del terreno seleccionado.  
+Dentro del proceso de validación, es determinante que el área de terreno seleccionada para 
+la  construcción  de  la  infraestructura  de  disposición  final  de  residuos  sólidos  tenga  la 
+aprobación de la población beneficiada, así como, de la población colindante al terreno, para 
+evitar posibles conflictos sociales a corto, mediano o largo plazo. Por este motivo el titular que 
+ejecutará  el  proyecto  deberá  desarrollar  talleres  participativos  e  informativos  para  toda  la 
+
+===== PAGINA 42 =====
+41 
+población. Esto  se  evidenciará  mediante  documentos  que  acrediten  la  participación  y 
+asistencia  de la población  a  talleres  informativos  y  reuniones  con  especialistas  (actas, 
+encuestas, listas de asistencia, etc.). 
+ 
+GRÁFICO 33. DETALLE DE LOS RESULTADOS EN LA PROVINCIA DE AREQUIPA 
+ 
+ 
+ 
+VI. CONSIDERACIONES FINALES 
+ 
+a. El  modelo  permite  la  focalización  de  áreas,  a  partir  de  la información  de  la  ZEE, para 
+establecer acciones estratégicas y específicas para la implementación de infraestructura de 
+RRSS. 
+b. Permite  la  localización  adecuada  de  los  proyectos  de  inversión  pública relacionados  al 
+cierre de brechas sobre residuos sólidos, tomando en cuenta los criterios (restricciones y 
+exclusiones) establecidos en la normativa vigente. 
+c. A partir del resultado de la aplicación del presente modelo, el equipo técnico a cargo en el 
+nivel de gobierno correspondiente deberá realizar la validación en campo de la propuesta 
+de las áreas potenciales. 
+d. Asimismo,  el  equipo  técnico  deberá  realizar  la  evaluación  para  la  selección  de  las 
+alternativas  incluyendo  factores  relacionados a  saneamiento  físico  legal,  compatibilidad 
+con el Plan de Desarrollo Urbano, condiciones climáticas y otros, de corresponder. 
+ 
+VII. GLOSARIO 
+ 
+Áreas  Naturales  Protegidas  por  el Estado. - Son  espacios  continentales  y/o  marinos  del 
+territorio  nacional reconocidos,  establecidos  y  protegidos  legalmente  por  el  Estado  como 
+tales, debido a su importancia para la conservación de la diversidad biológica y demás valores 
+asociados  de  interés  cultural,  paisajístico  y  científico,  así  como  por  su  contribución  al 
+desarrollo sostenible del país. 
+Aeródromo. - Área  definida  de  tierra  o  de  agua,  (que  incluye  todas  sus  edificaciones, 
+instalaciones y equipos) destinado total o parcialmente a la llegada, salida y movimiento en 
+superficie de aeronaves.  
+Acondicionamiento cartográfico. - Es un proceso que comprende  el  establecimiento  de  la 
+adecuación de la información geográfica para que sea uniformizado y homogeneizado con el 
+
+===== PAGINA 43 =====
+42 
+propósito de ajustar los datos, así como reducir o eliminar las inconsistencias de la base de 
+datos de los Sistemas de Información Geográfica. 
+Análisis espacial. - Conjunto  de  técnicas  basadas  en  la  localización  de  los  objetos  o  hechos 
+geográficos  que  analizan,  requiriendo  el  acceso  simultáneo  al  componente  locacional  y  te 
+mático de la información. 
+Concesiones. - Consiste en la cesión del derecho de una empresa a otra, normalmente de una 
+pública a una privada, para el uso y explotación de bienes o servicios por un lapso determinado 
+Desastres Naturales. - Serie de fenómenos de la naturaleza de gran intensidad que ponen en 
+peligro  la  vida  humana.  Los  desastres  naturales  solo  reciben  este  nombre  cuando  un 
+fenómeno afecta sensiblemente a una población en condiciones de vulnerabilidad. 
+Disposición final. - Procesos  u  operaciones  para  tratar  y  disponer  en  un  lugar  los  residuos 
+como último proceso de su manejo en forma permanente, sanitaria y ambientalmente segura. 
+Exclusión. – Acción o efecto de excluir, separar una variable en un análisis. 
+Factores climáticos. - Son agentes como la latitud, vientos predominantes, corrientes marinas, 
+distancia al mar, altitud y relieve, que modifican, acentúan o limitan los elementos del clima y 
+dan lugar a los distintos tipos de climas. 
+Falla geológica. - Es  una  fractura  en  la  corteza  terrestre  a  lo  largo  de  la  cual se  mueven  los 
+bloques rocosos que son separados por ella. 
+Geología. -  Ciencia  de  la  tierra  y  tiene  por  objeto  entender  la  evolución  del  planeta  y  sus 
+habitantes,  desde  los  tiempos  más  antiguos  hasta  la  actualidad  mediante  el  análisis  de  las 
+rocas. 
+Geomorfología. - Es la rama tanto de la geología como de la geografía, que estudia las formas 
+de  la  superficie  terrestre,  para  comprender  su  origen,  transformaciones  y  comportamiento 
+actual. 
+Gestión integral de residuos sólidos. -Toda actividad técnica administrativa de planificación, 
+coordinación, concertación, diseño, aplicación y evaluación de políticas, estrategias, planes y 
+programas de acción de manejo apropiado de los residuos sólidos. 
+Hidrogeología. - Es la ciencia que estudia el origen y la formación de las aguas subterráneas, 
+así como su movimiento y características físicas, químicas y biológicas. 
+Información geográfica. - Se denomina información geográfica, también llamada información 
+geoespacial o información espacial, a aquellos datos espaciales georreferenciados requeridos 
+como partes de operaciones científicas, administrativas o legales. 
+Litología. - Se dedica al estudio de las propiedades químicas y físicas de las rocas, teniendo en 
+cuanto las características de sus partículas 
+Metadata. - Grupo de datos que describen el contenido informativo de un objeto 
+Modelamiento cartográfico. - Se  entiende  como  el  procedimiento  sistémico  de  análisis 
+utilizando los Sistemas de Información Geográfica sobre información georeferenciada para el 
+estudio del espacio geográfico. 
+Patrimonio cultural. - Es  el  conjunto  de  bienes  tangibles  e  intangibles, que constituyen  la 
+herencia de un grupo humano, que refuerzan emocionalmente su sentido de comunidad con 
+una identidad propia y que son percibidos por otros como característicos 
+Restricción. – Se refiere a poner límites a algo, mientras que la noción de límite está vinculada 
+a una línea que separa dos territorios. 
+
+===== PAGINA 44 =====
+43 
+Relleno sanitario. - Instalación destinada a la disposición sanitaria y ambientalmente segura 
+de los residuos municipales a superficie o bajo tierra, basados en los principios y métodos de 
+la ingeniería sanitaria y ambiental. 
+Residuos municipales. - Los   residuos   del   ámbito   de   la   gestión   municipal   o   residuos 
+municipales, están conformados por los residuos domiciliarios y los provenientes del barrido 
+y  limpieza  de  espacios  públicos,  incluyendo  las  playas,  actividades  comerciales  y  otras 
+actividades  urbanas  no  domiciliarias  cuyos  residuos  se  pueden  asimilar  a  los  servicios  de 
+limpieza pública, en todo el ámbito de su jurisdicción. 
+Saneamiento  físico  legal de  predios. - Es  el  trámite  destinado  a  la  regularización  de  la 
+documentación de la propiedad del terreno en primer lugar, y luego de la construcción que se 
+haya  edificado  sobre  el  predio  (de  ser  el  caso)  con  el  objeto  de  obtener  la  titulación  o 
+acreditación idónea para su acceso a los Registros Públicos. 
+Topografía. - Es la ciencia que estudia el conjunto de principios y procedimientos que tienen 
+por objeto la representación gráfica de la superficie terrestre, con sus formas y detalles; tanto 
+naturales como artificiales. 
+  
+VIII. ACRÓNIMOS Y SIGLAS 
+ 
+ACR  : Área de Conservación Regional 
+ANP  : Área Natural Protegida 
+CIRA  : Certificado de Inexistencia de Restos Arqueológicos 
+DGAC  : Dirección General de Aeronáutica Civil 
+DGRS  : Dirección General de Gestión de Residuos Sólidos 
+DGOTGIRN : Dirección General de Ordenamiento Territorial y de la Gestión  
+   Integrada de los Recursos Naturales 
+IDF  : Infraestructura de disposición final de residuos sólidos municipales 
+IGA  : Instrumento de Gestión Ambiental 
+IRS  : Infraestructuras de Residuos Sólidos 
+MIDAGRI : Ministerio de Desarrollo Agrario y Riego 
+MINAM  :   Ministerio del Ambiente 
+OEFA  : Organismo de Evaluación y Fiscalización Ambiental 
+PIGARS  : Plan Provincial de Gestión Integral de Residuos Sólidos Municipales 
+PIP  :  Proyecto de Inversión Pública 
+PLANRES : Plan Nacional de Gestión Integral Residuos Sólidos 
+SIG  : Sistema de Información Geográfica 
+SIGERSOL  : Sistema de Información para la Gestión de Residuos Sólidos  
+UEE  : Unidades Ecológicas Económicas 
+ZEE  : Zonificación Ecológica y Económica 
+ 

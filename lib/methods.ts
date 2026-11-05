@@ -1,0 +1,579 @@
+export type MethodCategory = "Geometría" | "Residuos" | "Lixiviados" | "Biogás" | "Hidráulica" | "Geotecnia" | "Análisis";
+export type ValidationStatus = "validado-con-ejemplo" | "verificado-por-balance" | "conceptual" | "referencia";
+
+export interface MethodVariable {
+  symbol: string;
+  description: string;
+  unit: string;
+}
+
+export interface MethodRecord {
+  id: string;
+  name: string;
+  category: MethodCategory;
+  formula: string;
+  variables: MethodVariable[];
+  resultUnit: string;
+  sourceDoc: string;
+  sourcePages: string;
+  sourceUrl: string;
+  assumptions: string[];
+  limitations: string[];
+  version: string;
+  validation: ValidationStatus;
+  testCase: string;
+  engineFunction: string;
+  implemented: boolean;
+}
+
+export const SOURCES = {
+  honduras: {
+    title: "Manual de Construcción y Operación de Rellenos Sanitarios en Honduras",
+    short: "Honduras 2014",
+    issuer: "SERNA Honduras / GIZ / AGCI",
+    year: "2014",
+    url: "https://www.cnpml-honduras.org/wp-content/uploads/2025/09/Manual-de-Construccion-y-Operacion-de-Rellenos-Sanitarios-en-Honduras.pdf",
+    note: "Documento técnico. Los valores se citan como referencias técnicas, no como requisitos legales vigentes.",
+  },
+  minam: {
+    title: "Guía de Diseño, Construcción, Operación, Mantenimiento y Cierre de Relleno Sanitario Mecanizado",
+    short: "MINAM 2011",
+    issuer: "Ministerio del Ambiente del Perú",
+    year: "2011",
+    url: "https://sinia.minam.gob.pe/sites/default/files/sinia/archivos/public/docs/2645.pdf",
+    note: "Guía técnica. Las referencias normativas internas deben verificarse en su versión vigente.",
+  },
+  minam2019: {
+    title: "Guía para el diseño y construcción de infraestructuras para disposición final de residuos sólidos municipales",
+    short: "MINAM 2019",
+    issuer: "Ministerio del Ambiente del Perú",
+    year: "2019",
+    url: "https://www.gob.pe/institucion/minam/publicaciones",
+    note: "Guía técnica vigente de 116 páginas. No crea obligaciones por sí misma; cuando reproduce el D.S. 014-2017-MINAM se cita como requisito legal.",
+  },
+  rm165: {
+    title:
+      "Guía para la identificación de zonas potenciales para infraestructura de disposición final de residuos sólidos municipales (documento propuesta)",
+    short: "R.M. 165-2021",
+    issuer: "Ministerio del Ambiente del Perú",
+    year: "2021",
+    url: "https://www.gob.pe/institucion/minam/publicaciones",
+    note: "Documento propuesta; su aprobación como norma no consta en el archivo consultado. Se usa como referencia metodológica.",
+  },
+  ipcc: {
+    title: "2006 IPCC Guidelines for National Greenhouse Gas Inventories, Vol. 5, Ch. 3",
+    short: "IPCC 2006",
+    issuer: "Intergovernmental Panel on Climate Change",
+    year: "2006",
+    url: "https://www.ipcc-nggip.iges.or.jp/public/2006gl/vol5.html",
+    note: "Metodología de descomposición de primer orden para residuos sólidos dispuestos.",
+  },
+  internal: {
+    title: "Green Owl Labs — documentación del motor de cálculo",
+    short: "GO-ENGINE",
+    issuer: "Green Owl Labs",
+    year: "2026",
+    url: "",
+    note: "Formulación implementada y verificada con pruebas unitarias del repositorio.",
+  },
+};
+
+export const METHODS: MethodRecord[] = [
+  {
+    id: "prismoid",
+    name: "Volumen de celda por integración prismoidal",
+    category: "Geometría",
+    formula: "V = h/3 · (A_base + A_corona + √(A_base · A_corona))  |  V = Σ h_i/6 · (A₁ + 4A_m + A₂)",
+    variables: [
+      { symbol: "h", description: "Altura de la celda o intervalo entre bermas", unit: "m" },
+      { symbol: "A_base", description: "Área de la base inferior", unit: "m²" },
+      { symbol: "A_corona", description: "Área de la sección superior", unit: "m²" },
+      { symbol: "A_m", description: "Área de la sección media", unit: "m²" },
+    ],
+    resultUnit: "m³",
+    sourceDoc: "MINAM 2011 — Guía de relleno sanitario mecanizado",
+    sourcePages: "pp. 58–59 (PDF 58–59)",
+    sourceUrl: SOURCES.minam.url,
+    assumptions: [
+      "Caras laterales planas y dimensiones variables linealmente con la altura.",
+      "Las bermas se modelan como escalones horizontales que interrumpen el talud.",
+      "No se descuentan aún las capas; el volumen bruto es geométrico.",
+    ],
+    limitations: [
+      "No sustituye una cubicación topográfica con modelo digital del terreno.",
+      "No considera irregularidades locales del terreno ni intersecciones entre celdas.",
+    ],
+    version: "1.0.0",
+    validation: "validado-con-ejemplo",
+    testCase:
+      "MINAM p. 59: trinchera de 76 × 7 m, fondo 73.5 × 4.5 m y h = 2.5 m. El manual reporta 1 068.52 m³ con V = h/3 (ab + cd + √(ab·cd)); el motor integra el prismoidal exacto y obtiene 1 075.83 m³ (+0.68 %).",
+    engineFunction: "geometry.cellVolumeZeroTo / computeGeometry",
+    implemented: true,
+  },
+  {
+    id: "slice",
+    name: "Integración por secciones horizontales con bermas",
+    category: "Geometría",
+    formula: "V(z) = Σ_{i=1..n} (h_i/6)(A_i + 4A_mi + A_{i+1})",
+    variables: [
+      { symbol: "h_i", description: "Altura del intervalo entre bermas", unit: "m" },
+      { symbol: "A_i", description: "Área horizontal al inicio del intervalo", unit: "m²" },
+    ],
+    resultUnit: "m³",
+    sourceDoc: "GO-ENGINE — extensión del método prismoidal",
+    sourcePages: "Documentación interna, v1.0",
+    sourceUrl: "",
+    assumptions: [
+      "Dentro de cada intervalo el ancho varía linealmente.",
+      "La berma se representa como un escalón horizontal de ancho definido.",
+    ],
+    limitations: ["Aproxima el área lateral de las bermas; no modela curvas de nivel reales."],
+    version: "1.0.0",
+    validation: "verificado-por-balance",
+    testCase: "Prueba unitaria: sin bermas coincide con el prismoidal analítico; la inversión volumen→altura converge con error < 1×10⁻⁶ m.",
+    engineFunction: "geometry.cellGeometry / heightForVolume",
+    implemented: true,
+  },
+  {
+    id: "capacity",
+    name: "Capacidad útil y tonelaje de diseño",
+    category: "Residuos",
+    formula: "V_disp = V_bruto·FU − V_liner − V_infra;  V_res = V_disp/(1+r_cob);  T = V_res·ρ/1000",
+    variables: [
+      { symbol: "FU", description: "Factor de utilización volumétrica", unit: "—" },
+      { symbol: "r_cob", description: "Relación volumétrica de material de cobertura", unit: "—" },
+      { symbol: "ρ", description: "Densidad de diseño (inicial o estabilizada)", unit: "kg/m³" },
+    ],
+    resultUnit: "m³ y t",
+    sourceDoc: "MINAM 2011 / Honduras 2014",
+    sourcePages: "MINAM pp. 60–63; Honduras pp. 33–35 y 46–49",
+    sourceUrl: SOURCES.minam.url,
+    assumptions: [
+      "El volumen de cobertura se reserva como fracción del volumen de residuos.",
+      "El volumen de la barrera y geosintéticos se descuenta del volumen bruto.",
+      "La densidad puede ser la inicial compactada o la final estabilizada, según el método seleccionado.",
+    ],
+    limitations: [
+      "Estimación volumétrica preliminar; no es una cubicación topográfica validada.",
+      "No modela asentamientos diferenciales ni pérdida de capacidad por inestabilidad.",
+    ],
+    version: "1.0.0",
+    validation: "verificado-por-balance",
+    testCase: "Prueba unitaria: V_res + V_cob = V_disp; T = V_res·ρ/1000 dentro de 1×10⁻⁶.",
+    engineFunction: "capacity.computeCapacity",
+    implemented: true,
+  },
+  {
+    id: "honduras-capacity",
+    name: "Capacidad preliminar requerida (Honduras 2014)",
+    category: "Residuos",
+    formula: "V = 365 · 1.25 · Vida_útil · Pob · ppc · Cob / 600",
+    variables: [
+      { symbol: "Pob", description: "Población de la localidad", unit: "hab" },
+      { symbol: "ppc", description: "Producción per cápita", unit: "kg/hab/día" },
+      { symbol: "Cob", description: "Cobertura del servicio", unit: "fracción" },
+      { symbol: "600", description: "Densidad de referencia", unit: "kg/m³" },
+    ],
+    resultUnit: "m³",
+    sourceDoc: "Honduras 2014",
+    sourcePages: "pp. 33–35 (PDF 34–36)",
+    sourceUrl: SOURCES.honduras.url,
+    assumptions: ["Densidad fija de 600 kg/m³ y factor de cobertura 1.25.", "Proyección constante, sin crecimiento poblacional."],
+    limitations: ["Solo prospección preliminar de sitios; el manual exige un cálculo fino posterior."],
+    version: "1.0.0",
+    validation: "referencia",
+    testCase: "Honduras p. 35: 120 000 hab, 0.75 kg/hab/día, 85 %, 12 años → 698 063 m³.",
+    engineFunction: "No implementado como cálculo principal; se muestra como referencia comparativa.",
+    implemented: false,
+  },
+  {
+    id: "waste-balance",
+    name: "Balance anual de residuos y vida útil",
+    category: "Residuos",
+    formula: "G_t = Pob₀(1+i)^t · ppc₀(1+g)^t · 365/1000;  D_t = G_t·Cob·(1−Rec);  V_t = D_t·1000/ρ;  R_t = R_{t−1} − V_t",
+    variables: [
+      { symbol: "i", description: "Crecimiento poblacional anual", unit: "—" },
+      { symbol: "g", description: "Crecimiento de la generación per cápita", unit: "—" },
+      { symbol: "Rec", description: "Tasa de recuperación previa a disposición", unit: "—" },
+      { symbol: "ρ", description: "Densidad de diseño", unit: "kg/m³" },
+    ],
+    resultUnit: "t/año, m³/año, años",
+    sourceDoc: "MINAM 2011 / Honduras 2014",
+    sourcePages: "MINAM pp. 61–63; Honduras pp. 46–50",
+    sourceUrl: SOURCES.honduras.url,
+    assumptions: [
+      "Crecimiento geométrico de población y de generación per cápita.",
+      "La recuperación se aplica a los residuos recolectados.",
+      "La vida útil se determina cuando el volumen acumulado iguala la capacidad.",
+    ],
+    limitations: [
+      "No modela migración interdistrital, ni cambios de cobertura por política pública.",
+      "La densidad se mantiene constante en el tiempo según la base seleccionada.",
+    ],
+    version: "1.0.0",
+    validation: "verificado-por-balance",
+    testCase: "Pruebas: cierre de masa generada = recolectada + no recolectada; dispuesta = recolectada − recuperada; año de agotamiento interpolado.",
+    engineFunction: "waste.computeWasteBalance",
+    implemented: true,
+  },
+  {
+    id: "water-balance",
+    name: "Balance hídrico y generación de lixiviados",
+    category: "Lixiviados",
+    formula: "I = P − R − ET;  L_t = I_activo + I_cerrado + H_residuos;  H = m·(w_ingreso − CC)",
+    variables: [
+      { symbol: "P", description: "Precipitación sobre el área expuesta", unit: "m³/año" },
+      { symbol: "R", description: "Escorrentía superficial", unit: "m³/año" },
+      { symbol: "ET", description: "Evapotranspiración del área cerrada", unit: "m³/año" },
+      { symbol: "m", description: "Masa de residuos dispuesta", unit: "t/año" },
+      { symbol: "w_ingreso", description: "Humedad de ingreso", unit: "fracción" },
+      { symbol: "CC", description: "Capacidad de campo", unit: "fracción" },
+    ],
+    resultUnit: "m³/año y L/s",
+    sourceDoc: "MINAM 2011",
+    sourcePages: "pp. 73–77 (PDF 73–77)",
+    sourceUrl: SOURCES.minam.url,
+    assumptions: [
+      "Flujo vertical preferente; no se resuelve el transporte no saturado.",
+      "La cobertura reduce la infiltración con un factor configurable.",
+      "La liberación de humedad ocurre en el año de disposición.",
+    ],
+    limitations: [
+      "No reemplaza HELP, HYDRUS ni un modelo hidrogeológico calibrado.",
+      "No modela flujos preferenciales, recirculación ni variación mensual completa.",
+    ],
+    version: "1.0.0",
+    validation: "verificado-por-balance",
+    testCase: "Prueba unitaria: P = R + ET + I en cada año (tolerancia 1×10⁻⁶); el volumen tratado + no tratado = lixiviado generado.",
+    engineFunction: "leachate.computeLeachate",
+    implemented: true,
+  },
+  {
+    id: "swiss",
+    name: "Método suizo de estimación de lixiviados",
+    category: "Lixiviados",
+    formula: "Q = P · A · K / 31 536 000",
+    variables: [
+      { symbol: "P", description: "Precipitación media anual", unit: "mm/año" },
+      { symbol: "A", description: "Área superficial del relleno", unit: "m²" },
+      { symbol: "K", description: "Coeficiente según compactación", unit: "—" },
+    ],
+    resultUnit: "L/s",
+    sourceDoc: "MINAM 2011",
+    sourcePages: "p. 80 (PDF 80)",
+    sourceUrl: SOURCES.minam.url,
+    assumptions: [
+      "K entre 0.25 y 0.50 para densidad 0.4–0.7 t/m³.",
+      "K entre 0.15 y 0.25 para densidad > 0.7 t/m³.",
+    ],
+    limitations: ["Estimación de orden de magnitud; no considera el avance del llenado ni la cobertura."],
+    version: "1.0.0",
+    validation: "referencia",
+    testCase: "Verificación aritmética con A = 10 000 m², P = 1000 mm, K = 0.2 → 0.0634 L/s.",
+    engineFunction: "leachate.computeLeachate (indicador comparativo)",
+    implemented: true,
+  },
+  {
+    id: "rational",
+    name: "Escorrentía de diseño — fórmula racional",
+    category: "Hidráulica",
+    formula: "Q_p = K · i · A_d / 3 600 000",
+    variables: [
+      { symbol: "K", description: "Coeficiente de escorrentía", unit: "—" },
+      { symbol: "i", description: "Intensidad de lluvia", unit: "mm/h" },
+      { symbol: "A_d", description: "Área de la cuenca", unit: "m²" },
+    ],
+    resultUnit: "m³/s",
+    sourceDoc: "MINAM 2011",
+    sourcePages: "pp. 69–71 (PDF 69–71)",
+    sourceUrl: SOURCES.minam.url,
+    assumptions: ["Intensidad media de la tormenta de 24 h calculada como P_24h/24.", "Coeficiente de escorrentía único para el área."],
+    limitations: ["No incluye tiempo de concentración ni distribución temporal de la lluvia."],
+    version: "1.0.0",
+    validation: "referencia",
+    testCase: "Verificación dimensional y prueba con K=0.35, i=2 mm/h, A=100 000 m² → 0.0194 m³/s.",
+    engineFunction: "leachate.computeLeachate (caudal de escorrentía)",
+    implemented: true,
+  },
+  {
+    id: "manning",
+    name: "Capacidad hidráulica de tubería — Manning",
+    category: "Hidráulica",
+    formula: "V = (1/n)·R^(2/3)·S^(1/2);  Q = A·V;  R = D/4 (sección llena)",
+    variables: [
+      { symbol: "n", description: "Coeficiente de rugosidad", unit: "s/m^(1/3)" },
+      { symbol: "D", description: "Diámetro interno", unit: "m" },
+      { symbol: "S", description: "Pendiente de la tubería", unit: "m/m" },
+    ],
+    resultUnit: "L/s",
+    sourceDoc: "MINAM 2011",
+    sourcePages: "p. 72 (PDF 72)",
+    sourceUrl: SOURCES.minam.url,
+    assumptions: ["Flujo permanente y uniforme.", "Sección llena, sin pérdidas localizadas."],
+    limitations: ["No verifica flujo parcial, aireación, obstrucción ni línea de energía."],
+    version: "1.0.0",
+    validation: "referencia",
+    testCase: "D=0.20 m, S=0.01, n=0.013 → Q ≈ 32.8 L/s.",
+    engineFunction: "leachate.manningFullPipeCapacity",
+    implemented: true,
+  },
+  {
+    id: "ipcc-fod",
+    name: "Generación de metano — descomposición de primer orden (IPCC)",
+    category: "Biogás",
+    formula: "DDOCm = W·DOC·DOCf·MCF·F;  CH₄(t) = Σ_x W_x·DOC·DOCf·MCF·F·(1−e^(−k))·e^(−k(t−x))·16/12",
+    variables: [
+      { symbol: "DOC", description: "Carbono orgánico degradable", unit: "t C/t residuo" },
+      { symbol: "DOCf", description: "Fracción de DOC que se descompone", unit: "—" },
+      { symbol: "MCF", description: "Factor de corrección de metano", unit: "—" },
+      { symbol: "F", description: "Fracción de CH₄ en el gas generado", unit: "—" },
+      { symbol: "k", description: "Constante de decaimiento", unit: "1/año" },
+    ],
+    resultUnit: "t CH₄/año y m³/año",
+    sourceDoc: "IPCC 2006, Vol. 5, Cap. 3",
+    sourcePages: "Ecuaciones 3.1–3.3 y valores por defecto (DOCf = 0.5; F = 0.5; MCF = 1 para relleno anaerobio gestionado)",
+    sourceUrl: SOURCES.ipcc.url,
+    assumptions: [
+      "Todos los residuos dispuestos en un año se tratan como una masa anual.",
+      "La descomposición comienza en el año de disposición.",
+      "El metano se convierte a volumen mediante gas ideal en las condiciones de referencia.",
+    ],
+    limitations: [
+      "No calibra k ni DOC con datos locales; requiere caracterización y pruebas de campo.",
+      "No distingue fases aerobia/anaerobia ni migración lateral.",
+      "La captura y oxidación son factores de eficiencia supuestos, no resultados de diseño de pozos.",
+    ],
+    version: "1.0.0",
+    validation: "verificado-por-balance",
+    testCase: "Prueba: sumatoria de CH₄ en 200 años = W·DOC·DOCf·MCF·F·16/12 (error < 0.01 %). Composición de referencia 40–60 % CH₄ (MINAM p. 87; Honduras p. 92).",
+    engineFunction: "gas.computeGas",
+    implemented: true,
+  },
+  {
+    id: "infinite-slope",
+    name: "Estabilidad de talud infinito (revisión conceptual)",
+    category: "Geotecnia",
+    formula: "FS = [c' + (γ·z·cos²β − u)·tanφ'] / (γ·z·sinβ·cosβ);  u = γ_w·m·z·cos²β",
+    variables: [
+      { symbol: "c'", description: "Cohesión efectiva", unit: "kPa" },
+      { symbol: "φ'", description: "Ángulo de fricción efectivo", unit: "°" },
+      { symbol: "β", description: "Ángulo del talud", unit: "°" },
+      { symbol: "m", description: "Relación de altura del nivel freático", unit: "—" },
+      { symbol: "z", description: "Profundidad de la superficie de falla", unit: "m" },
+    ],
+    resultUnit: "adimensional",
+    sourceDoc: "GO-ENGINE — formulación geotécnica clásica",
+    sourcePages: "Documentación interna, v1.0",
+    sourceUrl: "",
+    assumptions: [
+      "Superficie de falla paralela al talud.",
+      "Talud infinito, suelo homogéneo y flujo paralelo a la superficie.",
+      "Sin efectos tridimensionales ni cargas dinámicas.",
+    ],
+    limitations: [
+      "No analiza fallas circulares, cuñas profundas, capacidad de soporte ni licuación.",
+      "El análisis sísmico no está implementado; solo se registra la PGA.",
+      "No sustituye un estudio geotécnico ni software especializado.",
+    ],
+    version: "1.0.0",
+    validation: "verificado-por-balance",
+    testCase: "Caso de referencia: β=18.43°, φ'=30°, c'=0, sin agua → FS = tan30°/tan18.43° = 1.732.",
+    engineFunction: "geotech.computeGeotech",
+    implemented: true,
+  },
+  {
+    id: "oat",
+    name: "Sensibilidad uno a la vez (OAT)",
+    category: "Análisis",
+    formula: "Δ_resultado(%) = (R(variante) − R(base)) / R(base) · 100",
+    variables: [{ symbol: "R", description: "Indicador (vida útil, lixiviados, CH₄)", unit: "variable" }],
+    resultUnit: "% de cambio",
+    sourceDoc: "GO-ENGINE",
+    sourcePages: "Documentación interna, v1.0",
+    sourceUrl: "",
+    assumptions: ["Cada variable se perturba de forma independiente.", "Los demás parámetros permanecen constantes."],
+    limitations: ["No captura interacciones ni correlaciones.", "El rango de perturbación es fijo y debe interpretarse como exploración, no como intervalo de confianza."],
+    version: "1.0.0",
+    validation: "conceptual",
+    testCase: "Prueba: el resultado base se reproduce con factor 1.0 y los deltas son monótonos para densidad y capacidad.",
+    engineFunction: "sensitivity.computeSensitivity",
+    implemented: true,
+  },
+  {
+    id: "monte-carlo",
+    name: "Simulación Monte Carlo (incertidumbre)",
+    category: "Análisis",
+    formula: "Muestreo de Pob, ppc, P, DOC y k ~ Normal(μ, σ) truncada; percentiles P10/P50/P90",
+    variables: [
+      { symbol: "μ", description: "Valor del escenario base", unit: "variable" },
+      { symbol: "σ", description: "Coeficiente de variación declarado", unit: "—" },
+    ],
+    resultUnit: "percentiles de vida útil, lixiviados y CH₄",
+    sourceDoc: "GO-ENGINE",
+    sourcePages: "Documentación interna, v1.0",
+    sourceUrl: "",
+    assumptions: [
+      "Variables independientes con distribución normal truncada.",
+      "CV: población 8 %, ppc 10 %, precipitación 15 %, DOC 12 %, k 20 %.",
+      "Semilla fija para reproducibilidad.",
+    ],
+    limitations: ["Distribuciones supuestas, no derivadas de datos de campo.", "No modela correlaciones ni tendencias climáticas."],
+    version: "1.0.0",
+    validation: "conceptual",
+    testCase: "Prueba de reproducibilidad con la misma semilla y de orden P10 ≤ P50 ≤ P90.",
+    engineFunction: "sensitivity.runMonteCarlo",
+    implemented: true,
+  },
+  {
+    id: "closure-cover",
+    name: "Cobertura final y clausura",
+    category: "Geometría",
+    formula: "V_cobertura = A_corona · Σ e_i · (1 + factor_asentamiento)",
+    variables: [
+      { symbol: "e_i", description: "Espesor de cada capa habilitada", unit: "m" },
+      { symbol: "A_corona", description: "Área superficial de cierre", unit: "m²" },
+    ],
+    resultUnit: "m³",
+    sourceDoc: "Honduras 2014 / MINAM 2011",
+    sourcePages: "Honduras pp. 50–52 y 88; MINAM p. 64",
+    sourceUrl: SOURCES.honduras.url,
+    assumptions: [
+      "Las capas son horizontales sobre el área de coronación modelada.",
+      "El factor de asentamiento es una reserva volumétrica configurable.",
+    ],
+    limitations: ["No modela pandeo, erosión ni estabilidad de la cobertura."],
+    version: "1.0.0",
+    validation: "referencia",
+    testCase: "Verificación: V = área × espesor total × (1 + 5 %) en la prueba de capacidad de cobertura.",
+    engineFunction: "closure.computeClosure",
+    implemented: true,
+  },
+  {
+    id: "reference-values",
+    name: "Valores de referencia documentados",
+    category: "Geometría",
+    formula: "Tabla de valores citados; no son límites legales automáticos",
+    variables: [],
+    resultUnit: "diversas",
+    sourceDoc: "Honduras 2014 / MINAM 2011",
+    sourcePages: "Ver matriz de referencias",
+    sourceUrl: SOURCES.honduras.url,
+    assumptions: ["Los valores corresponden a las ediciones citadas y a las condiciones descritas por cada guía."],
+    limitations: ["Deben confirmarse con la normativa vigente y el estudio específico del sitio."],
+    version: "1.0.0",
+    validation: "referencia",
+    testCase: "Valores contrastados con el texto extraído: pendiente 1:3, cobertura diaria 15–20 cm, densidad 0.6–0.85 t/m³, capa drenante 60 cm, espaciamiento de tuberías 10–20 m.",
+    engineFunction: "validation.validateModel",
+    implemented: true,
+  },
+  {
+    id: "site-selection",
+    name: "Verificación de localización y exclusiones",
+    category: "Análisis",
+    formula:
+      "Cumplimiento = [Σ(cumple) + 0,5·Σ(observado)] / n_criterios × 100; restricción dura si exclusión = sí o distancia < mínimo",
+    variables: [
+      { symbol: "n_criterios", description: "Criterios y exclusiones evaluados", unit: "—" },
+      { symbol: "cumple", description: "Criterio que satisface la referencia", unit: "—" },
+      { symbol: "observado", description: "Criterio en franja de verificación adicional", unit: "—" },
+    ],
+    resultUnit: "% de verificación y restricciones duras",
+    sourceDoc: "R.M. 165-2021-MINAM (anexo) / D.S. 014-2017-MINAM, art. 110",
+    sourcePages: "R.M. 165-2021 Tabla 6, p. 18; Guía MINAM 2019, pp. 12–13",
+    sourceUrl: SOURCES.rm165.url,
+    assumptions: [
+      "Las distancias y exclusiones las declara el usuario a partir de cartografía oficial.",
+      "Cada criterio pesa igual; el indicador es una ayuda de despacho, no un puntaje de aptitud.",
+      "Una exclusión marcada o una distancia bajo el mínimo se trata como restricción dura.",
+    ],
+    limitations: [
+      "No reemplaza el modelamiento SIG ni la verificación de campo que exige la R.M. 165-2021.",
+      "El artículo 110 del D.S. 014-2017-MINAM admite excepciones sujetas al IGA y a la autoridad competente.",
+      "La R.M. 165-2021 se consultó como documento propuesta; confirmar su vigencia antes de citarla como norma.",
+    ],
+    version: "1.0.0",
+    validation: "validado-con-ejemplo",
+    testCase:
+      "Sitio demostrativo: 0 restricciones duras y cumplimiento > 80 %. Casos de prueba: población a 320 m → no cumple; aeródromo a 8.5 km → observado; exclusiones vacías → sin dato, no cumplimiento.",
+    engineFunction: "siteSelection.assessSiteSelection / validation.validateModel",
+    implemented: true,
+  },
+  {
+    id: "barrier-gas-2019",
+    name: "Barrera de fondo y captura de biogás (Guía MINAM 2019)",
+    category: "Geometría",
+    formula:
+      "Barrera: k ≤ 1×10⁻⁶ cm/s y e ≥ 0,40 m, o HDPE ≥ 1,2 mm + geotextil no tejido. Gas: > 200 t/día → captura y quema centralizada; < 200 t/día → captura y quema convencional.",
+    variables: [
+      { symbol: "k", description: "Permeabilidad de la barrera mineral", unit: "cm/s" },
+      { symbol: "e", description: "Espesor de la barrera mineral", unit: "m" },
+      { symbol: "Q", description: "Caudal de residuos dispuestos", unit: "t/día" },
+    ],
+    resultUnit: "verificación binaria y recomendación de sistema de gas",
+    sourceDoc: "Guía MINAM 2019 / D.S. 014-2017-MINAM, art. 114",
+    sourcePages: "Guía 2019 pp. 13 y §12.9 (PDF 62–66); Cuadro N.° 43, p. 165 (PDF 83)",
+    sourceUrl: SOURCES.minam2019.url,
+    assumptions: [
+      "La barrera mineral se evalúa con el espesor y la permeabilidad declarados en las capas de la celda.",
+      "El caudal pico se estima con el año de mayor disposición del horizonte simulado.",
+    ],
+    limitations: [
+      "No verifica la instalación, el traslape, el ensayo de estanqueidad ni el control de calidad de la geomembrana.",
+      "El umbral de 200 t/día orienta el sistema de captura; el dimensionamiento del sistema de gas se calcula por separado.",
+    ],
+    version: "1.0.0",
+    validation: "validado-con-ejemplo",
+    testCase:
+      "Caso demostrativo: barrera mineral de 0,40 m y k ≤ 1×10⁻⁸ m/s; geomembrana de 1,5 mm con geotextil. La validación emite las alertas correspondientes cuando el espesor o la permeabilidad no alcanzan la referencia.",
+    engineFunction: "validation.validateModel",
+    implemented: true,
+  },
+];
+
+export interface ReferenceValue {
+  id: string;
+  parameter: string;
+  value: string;
+  source: string;
+  pages: string;
+  classification: "recomendación técnica" | "dato de diseño" | "rango observado";
+  usedIn: string;
+}
+
+export const REFERENCE_VALUES: ReferenceValue[] = [
+  { id: "rv-1", parameter: "Pendiente de talud de residuos (mecanizado)", value: "1H:3V (≈ 18.4°)", source: "Honduras 2014", pages: "p. 43 (PDF 44)", classification: "recomendación técnica", usedIn: "Geometría y geotecnia" },
+  { id: "rv-2", parameter: "Altura de celda mecanizada", value: "2–5 m", source: "Honduras 2014", pages: "p. 42 (PDF 43)", classification: "recomendación técnica", usedIn: "Celdas y operación" },
+  { id: "rv-3", parameter: "Cobertura diaria", value: "15–20 cm compactados", source: "Honduras 2014 / MINAM 2011", pages: "Honduras p. 42 (PDF 43); MINAM p. 64", classification: "recomendación técnica", usedIn: "Capas y operación" },
+  { id: "rv-4", parameter: "Densidad inicial de residuos mecanizados", value: "0.60–0.85 t/m³", source: "Honduras 2014", pages: "pp. 45–46 (PDF 46–47)", classification: "rango observado", usedIn: "Balance de residuos" },
+  { id: "rv-5", parameter: "Densidad final estabilizada", value: "0.80–1.00 t/m³", source: "Honduras 2014", pages: "pp. 45–46 (PDF 46–47)", classification: "rango observado", usedIn: "Capacidad" },
+  { id: "rv-6", parameter: "Material de cobertura", value: "20–25 % del volumen de residuos", source: "Honduras 2014 / MINAM 2011", pages: "Honduras p. 33 (PDF 34); MINAM p. 63", classification: "dato de diseño", usedIn: "Capacidad" },
+  { id: "rv-7", parameter: "Distancia mínima al nivel freático", value: "≥ 3 m", source: "Honduras 2014", pages: "p. 40 (PDF 41)", classification: "recomendación técnica", usedIn: "Emplazamiento" },
+  { id: "rv-8", parameter: "Conductividad del suelo natural entre fondo y freático", value: "≤ 1×10⁻⁵ cm/s", source: "Honduras 2014", pages: "p. 40 (PDF 41)", classification: "recomendación técnica", usedIn: "Emplazamiento" },
+  { id: "rv-9", parameter: "Barrera mineral compactada", value: "60 cm, k ≤ 1×10⁻⁷ cm/s", source: "Honduras 2014", pages: "pp. 50–52 (PDF 51–53)", classification: "recomendación técnica", usedIn: "Celdas y capas" },
+  { id: "rv-10", parameter: "Geomembrana (> 100 000 hab.)", value: "≥ 0.75 mm (HDPE ≥ 1.52 mm)", source: "Honduras 2014", pages: "p. 51 (PDF 52)", classification: "recomendación técnica", usedIn: "Celdas y capas" },
+  { id: "rv-11", parameter: "Capa drenante de lixiviados", value: "≈ 60 cm de grava", source: "MINAM 2011", pages: "p. 82", classification: "recomendación técnica", usedIn: "Sistemas de drenaje" },
+  { id: "rv-12", parameter: "Espaciamiento de tuberías de lixiviados", value: "10–20 m", source: "MINAM 2011", pages: "p. 82", classification: "recomendación técnica", usedIn: "Sistemas de drenaje" },
+  { id: "rv-13", parameter: "Pendiente de fondo", value: "1–2 %", source: "MINAM 2011", pages: "p. 82", classification: "recomendación técnica", usedIn: "Sistemas de drenaje" },
+  { id: "rv-14", parameter: "Almacenamiento de lixiviados", value: "1–3 días de caudal pico", source: "MINAM 2011", pages: "p. 83", classification: "recomendación técnica", usedIn: "Módulo de lixiviados" },
+  { id: "rv-15", parameter: "Fracción de metano en biogás", value: "40–60 % (referencia 47.5 %)", source: "MINAM 2011 / Honduras 2014", pages: "MINAM p. 87; Honduras p. 92", classification: "rango observado", usedIn: "Módulo de biogás" },
+  { id: "rv-16", parameter: "Rendimiento total de gas", value: "0.064–0.44 m³/kg residuo dispuesto", source: "MINAM 2011", pages: "p. 87", classification: "rango observado", usedIn: "Módulo de biogás" },
+  { id: "rv-17", parameter: "Tasa anual de generación de gas", value: "1.19–6.8 m³/Mg/año", source: "MINAM 2011", pages: "p. 87", classification: "rango observado", usedIn: "Módulo de biogás" },
+  { id: "rv-18", parameter: "Cobertura final mínima (referencia)", value: "0.50 m (MINAM) / 0.60 m (figura)", source: "MINAM 2011", pages: "p. 64", classification: "recomendación técnica", usedIn: "Clausura" },
+  { id: "rv-19", parameter: "Factor de capacidad preliminar", value: "1.25 (20–25 % de cobertura)", source: "Honduras 2014", pages: "p. 34 (PDF 35)", classification: "dato de diseño", usedIn: "Referencia comparativa" },
+  { id: "rv-20", parameter: "Vida útil mínima y recomendada", value: "≥ 5 años; recomendable ≥ 10 años", source: "MINAM 2011", pages: "p. 62", classification: "recomendación técnica", usedIn: "Capacidad y operación" },
+  { id: "rv-21", parameter: "Barrera mineral de fondo (referencia vigente)", value: "e ≥ 0,40 m y k ≤ 1×10⁻⁶ cm/s", source: "Guía MINAM 2019 / D.S. 014-2017-MINAM, art. 114", pages: "Guía 2019 p. 13 y §12.9 (PDF 62–66)", classification: "dato de diseño", usedIn: "Celdas y capas · validación" },
+  { id: "rv-22", parameter: "Geomembrana HDPE de reemplazo", value: "≥ 1,2 mm + geotextil no tejido", source: "Guía MINAM 2019", pages: "§12.9 (PDF 62)", classification: "recomendación técnica", usedIn: "Celdas y capas · validación" },
+  { id: "rv-23", parameter: "Umbral para captura y quema centralizada de gas", value: "> 200 t/día", source: "Guía MINAM 2019", pages: "Cuadro N.° 43, p. 165 (PDF 83)", classification: "dato de diseño", usedIn: "Biogás · validación" },
+  { id: "rv-24", parameter: "Distancia mínima a poblaciones y agua superficial", value: "≥ 500 m", source: "D.S. 014-2017-MINAM, art. 110", pages: "Citado en Guía MINAM 2019, pp. 12–13", classification: "dato de diseño", usedIn: "Verificación de localización" },
+  { id: "rv-25", parameter: "Distancia mínima a fallas geológicas", value: "≥ 1 km", source: "R.M. 165-2021-MINAM (anexo)", pages: "Tabla 6, p. 18", classification: "dato de diseño", usedIn: "Verificación de localización" },
+  { id: "rv-26", parameter: "Franja de distancia a aeródromos", value: "< 4 km no cumple; 4–13 km observado; ≥ 13 km cumple", source: "Guía MINAM 2019 / R.M. 165-2021", pages: "Guía 2019 pp. 12–13; R.M. 165 Tabla 6", classification: "dato de diseño", usedIn: "Verificación de localización" },
+];
+
+export function methodsByCategory(): Record<string, MethodRecord[]> {
+  const out: Record<string, MethodRecord[]> = {};
+  for (const m of METHODS) {
+    out[m.category] = out[m.category] ?? [];
+    out[m.category].push(m);
+  }
+  return out;
+}
