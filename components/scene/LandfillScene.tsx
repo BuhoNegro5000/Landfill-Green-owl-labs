@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useModel } from "@/components/ModelProvider";
 import { useStore, type SceneView } from "@/lib/store";
+import { CELL_METHOD_SPECS } from "@/lib/engine/cellMethods";
 import { cellDimensionAt, heightForVolume, type CellGeometry } from "@/lib/engine/geometry";
 import type { Layer } from "@/lib/types";
 import { layoutCells, CELL_COLORS, hexToNumber } from "@/lib/sceneLayout";
@@ -368,9 +369,9 @@ export default function LandfillScene({
     const fills = fillVolumes;
     for (const cell of cells) {
       const place = layout.placements.get(cell.id);
-      if (!place || cell.shape === "mound") continue;
+      if (!place || cell.cutDepthM <= 0.05) continue;
       const relativeGround = groundElevation - cell.baseElevationM;
-      if (relativeGround <= 0) continue;
+      if (relativeGround <= 0 || relativeGround > cell.cutDepthM + 0.05) continue;
       const zGround = Math.min(relativeGround, cell.heightM);
       const holeL = Math.max(1, cellDimensionAt(cell, zGround, "length")) + 1.2;
       const holeW = Math.max(1, cellDimensionAt(cell, zGround, "width")) + 1.2;
@@ -472,13 +473,27 @@ export default function LandfillScene({
       // Excavation shell (walls + benches), drawn step by step along the berms.
       const berms = Math.max(0, cell.bermCount);
       const interval = berms > 0 ? cell.heightM / berms : cell.heightM;
-      const wallMaterial = track(
+      // Cut walls and above-grade fill slopes use different materials so the
+      // effective method is visible in 3D.
+      const cutMaterial = track(
         new THREE.MeshStandardMaterial({
-          color: hexToNumber(cell.shape === "excavated" ? CELL_COLORS.wall : CELL_COLORS.wasteEmpty),
+          color: hexToNumber(CELL_COLORS.wall),
           roughness: 0.92,
           metalness: 0.03,
           transparent: true,
           opacity: selected ? 0.62 : 0.5,
+          side: THREE.DoubleSide,
+          clippingPlanes,
+          clipShadows: clipEnabled,
+        }),
+      );
+      const fillMaterial = track(
+        new THREE.MeshStandardMaterial({
+          color: hexToNumber(CELL_COLORS.wasteEmpty),
+          roughness: 0.9,
+          metalness: 0.02,
+          transparent: true,
+          opacity: selected ? 0.5 : 0.38,
           side: THREE.DoubleSide,
           clippingPlanes,
           clipShadows: clipEnabled,
@@ -504,7 +519,8 @@ export default function LandfillScene({
         const topW = cellDimensionAt(cfg, topZ, "width");
         if (bottomL <= 0 || bottomW <= 0) continue;
         const geometry = track(frustumGeometry(bottomL, bottomW, Math.max(topL, 0.4), Math.max(topW, 0.4), z1 - z0));
-        const mesh = new THREE.Mesh(geometry, wallMaterial);
+        const material = (z0 + z1) / 2 <= cell.cutDepthM + 1e-6 ? cutMaterial : fillMaterial;
+        const mesh = new THREE.Mesh(geometry, material);
         mesh.position.y = z0;
         mesh.castShadow = scene.shadows;
         mesh.receiveShadow = true;
@@ -526,14 +542,14 @@ export default function LandfillScene({
         const outerL = cellDimensionAt(cfg, z, "length");
         const outerW = cellDimensionAt(cfg, z, "width");
         const geometry = track(benchRingGeometry(innerL, innerW, outerL, outerW));
-        const ring = new THREE.Mesh(geometry, wallMaterial);
+        const ring = new THREE.Mesh(geometry, z <= cell.cutDepthM + 1e-6 ? cutMaterial : fillMaterial);
         ring.position.y = z;
         ring.receiveShadow = true;
         group.add(ring);
       }
 
-      // Top cap for mounds only: excavated cells remain open.
-      if (cell.shape === "mound" && fillPct < 0.995) {
+      // Top cap when there is an above-grade fill: excavated-only cells remain open.
+      if (cell.fillHeightM > 0.05 && fillPct < 0.995) {
         const topPlate = new THREE.Mesh(
           track(rectangle(cell.topLengthM, cell.topWidthM)),
           track(
@@ -650,11 +666,54 @@ export default function LandfillScene({
         }
       }
 
+      // Access ramp for combined/ramp cells. Preliminary wedge surface from
+      // the terrain down to the cell bottom.
+      if (cell.rampVolumeM3 > 0 && cell.rampWidthM > 0 && cell.rampLengthM > 0 && cell.cutDepthM > 0.05) {
+        const maxRun = Math.max(cell.groundLengthM * 0.95, cell.bottomLengthM * 0.95, 4);
+        const run = Math.min(cell.rampLengthM, maxRun);
+        const rampWidth = Math.min(cell.rampWidthM, Math.max(cell.groundWidthM * 0.7, 2));
+        const startX = -Math.max(cell.groundLengthM, cell.bottomLengthM) / 2 + 0.8;
+        const endX = startX + run;
+        const halfW = rampWidth / 2;
+        const vertices = new Float32Array([
+          startX, cell.cutDepthM, -halfW,
+          startX, cell.cutDepthM, halfW,
+          endX, 0, halfW,
+          endX, 0, -halfW,
+        ]);
+        const rampGeometry = track(new THREE.BufferGeometry());
+        rampGeometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+        rampGeometry.setIndex([0, 1, 2, 0, 2, 3]);
+        rampGeometry.computeVertexNormals();
+        const rampMaterial = track(
+          new THREE.MeshStandardMaterial({
+            color: 0x9b8a5a,
+            roughness: 0.88,
+            metalness: 0.02,
+            transparent: true,
+            opacity: selected ? 0.9 : 0.72,
+            side: THREE.DoubleSide,
+            clippingPlanes,
+            clipShadows: clipEnabled,
+          }),
+        );
+        const rampMesh = new THREE.Mesh(rampGeometry, rampMaterial);
+        rampMesh.userData.cellId = cell.id;
+        rampMesh.receiveShadow = true;
+        group.add(rampMesh);
+        pickMeshes.push(rampMesh);
+        const rampEdges = new THREE.LineSegments(
+          track(new THREE.EdgesGeometry(rampGeometry, 20)),
+          track(new THREE.LineBasicMaterial({ color: 0xe8c07a, transparent: true, opacity: 0.75, clippingPlanes })),
+        );
+        group.add(rampEdges);
+      }
+
       // Contour rings for each bench elevation.
       if (scene.showContours) {
         for (let i = 0; i <= Math.max(berms, 1); i++) {
           const z = Math.min((i * cell.heightM) / Math.max(berms, 1), cell.heightM);
-          if (i === 0 && cell.shape === "excavated") continue;
+          if (i === 0 && cell.cutDepthM > 0.05) continue;
           const L = cellDimensionAt(cfg, z, "length");
           const W = cellDimensionAt(cfg, z, "width");
           if (L <= 0 || W <= 0) continue;
@@ -765,7 +824,12 @@ export default function LandfillScene({
       }
 
       // Cell label.
-      const label = labelSprite(cell.name, `${fmtPct(fillPct * 100, 0)} llenado · cota ${fmt(cell.baseElevationM + fillHeight, 1)} m`, "#c4eda8", 30 * labelScale);
+      const label = labelSprite(
+        cell.name,
+        `${CELL_METHOD_SPECS[cell.effectiveMethod].shortLabel} · ${fmtPct(fillPct * 100, 0)} llenado · cota ${fmt(cell.baseElevationM + fillHeight, 1)} m`,
+        "#c4eda8",
+        30 * labelScale,
+      );
       label.sprite.position.set(
         group.position.x,
         group.position.y + Math.max(cell.heightM, fillHeight) + 9,

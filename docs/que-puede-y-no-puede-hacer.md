@@ -1,6 +1,6 @@
 # Qué puedes y qué no puedes hacer con Green Owl Landfill 3D
 
-**Green Owl Landfill 3D 1.0.0 · GO-ENGINE 1.0.0**
+**Green Owl Landfill 3D 1.0.0 · GO-ENGINE 1.1.0**
 
 Este documento responde una pregunta concreta: **¿la aplicación sirve para diseñar un relleno sanitario manual, semimecanizado o mecanizado?**
 
@@ -20,7 +20,11 @@ Respuesta corta: **sí para prediseño, dimensionamiento preliminar y trazabilid
 
 ### Lo importante sobre los métodos
 
-- La geometría de celda admite **trinchera (`trench`)**, **área (`area`)** y **rampa (`ramp`)**.
+- La geometría de celda admite **trinchera (`trench`)**, **área (`area`)** y **rampa (`ramp`)**. El método no es solo una etiqueta: cambia profundidad de corte, altura, cota de fondo, talud, bermas, borde libre, parámetros de rampa, volumen, huella, área de barrera, área de cobertura, 3D y balance de tierras.
+- El **método efectivo** se deriva de la geometría: sin corte = área; sin relleno = trinchera; con corte y relleno = rampa/combinado. Si la etiqueta declarada no coincide, la validación emite una advertencia trazable.
+- El **borde libre** se descuenta del volumen útil de residuos; el volumen geométrico se informa por separado.
+- La **rampa** se calcula como cuña preliminar: longitud derivada del desnivel y la pendiente, y volumen `0,5 · ancho · longitud · desnivel`.
+- El **balance de tierras** compara la excavación de celdas y rampas con la cobertura requerida; un resultado negativo indica necesidad de préstamo y uno positivo, superávit.
 - La biblioteca de métodos y la validación citan criterios de la Guía MINAM 2019 y del Manual de Honduras 2014, pero **no existe un código de diseño manual completo** dentro de la app.
 - Para un relleno manual o semimecanizado, la app te ayuda a cubrir el **balance de masa, volumen, vida útil, lixiviados, biogás y cierre**; no te exime de definir altura de celda, taludes, compactación, cobertura diaria y operación según la práctica local.
 - Para un relleno mecanizado, la app está más alineada con las guías MINAM 2011/2019 y con el Manual de Honduras 2014.
@@ -46,10 +50,14 @@ Respuesta corta: **sí para prediseño, dimensionamiento preliminar y trazabilid
 ### 2.2 Geometría y capacidad
 
 - Definir celdas con largo, ancho, altura, talud, bermas, cota base, tipo (trinchera, área, rampa) y forma (excavada o montículo).
+- Cambiar el método de una celda o de todo el escenario con un **preset real** que ajusta profundidad, cota de fondo, altura, talud, bermas, borde libre y rampa.
 - Agregar, duplicar, reordenar y eliminar celdas.
-- Calcular volumen por integración prismoidal, área de liner, huella y perfil volumen–elevación.
+- Calcular volumen por integración prismoidal con pivote en la cota de terreno, área de liner, área de cobertura, huella y perfil volumen–elevación.
+- Descontar el **borde libre** del volumen útil y reportar el volumen geométrico por separado.
+- Calcular la **rampa de acceso** como cuña preliminar y su excavación auxiliar.
+- Comparar excavación de celdas y rampas con la cobertura requerida mediante el **balance de tierras**.
 - Editar el sistema de capas: subrasante, arcilla, geomembrana, geotextil, drenaje, protección, residuos, cobertura diaria, intermedia y final.
-- Calcular capacidad bruta, descuentos, volumen útil y tonelaje.
+- Calcular capacidad bruta de diseño, descuentos, volumen útil y tonelaje.
 - Proyectar la vida útil con agotamiento fraccional y asignación secuencial por celda.
 
 ### 2.3 Residuos y operación
@@ -126,6 +134,7 @@ Respuesta corta: **sí para prediseño, dimensionamiento preliminar y trazabilid
 - **Biogás:** no diseña pozos, colectores, sopladores, red de vacío ni antorcha; el caudal pico es un promedio anual.
 - **Clausura:** cobertura horizontal simplificada; no modela erosión, pandeo, asentamiento diferencial ni estabilidad de la cobertura.
 - **Vías y edificios:** el 3D es una implantación esquemática, no un diseño geométrico ni estructural.
+- **Rampas:** la longitud y el volumen son una cuña preliminar; no diseña curvas, peralte, drenaje, muros, bermas de seguridad ni empalmes con plataformas.
 - **Interferencias:** no detecta choques entre redes, vías, edificios y celdas.
 
 ### 3.4 Métodos manual y semimecanizado

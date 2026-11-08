@@ -3,6 +3,7 @@ import type { ComputedModel, ScenarioSummary } from "@/lib/engine/model";
 import { computeSensitivity, type SensitivityResult } from "@/lib/engine/sensitivity";
 import { runSelfTests, selfTestSummary } from "@/lib/selfTest";
 import { METHODS, REFERENCE_VALUES, SOURCES } from "@/lib/methods";
+import { CELL_METHOD_SPECS } from "@/lib/engine/cellMethods";
 import { DOC_CLASS_LABEL, DOC_STATUS_LABEL } from "@/lib/normative";
 import { nf0, nf1, nf2, fmt, fmtDate, fmtPct, fmtUsd } from "@/lib/format";
 import { scenarioSummary } from "@/lib/engine/model";
@@ -452,15 +453,20 @@ export async function generateReport(
   // -------------------------------------------------------------------------
   if (sectionEnabled(options, "geometria")) {
     newPage();
-    heading("geometria", "4. Geometría general", "Integración prismoidal por intervalos entre bermas. Terreno esquemático, no levantamiento topográfico.");
+    heading("geometria", "4. Geometría general", "Integración prismoidal por intervalos entre bermas, con pivote en la cota de terreno. Terreno esquemático, no levantamiento topográfico.");
     y = labelValue(
       doc,
       [
-        ["Volumen bruto de celdas", `${fmt(model.geometry.grossVolumeM3)} m³`],
-        ["Volumen de excavación", `${fmt(model.geometry.excavationVolumeM3)} m³`],
+        ["Volumen bruto geométrico", `${fmt(model.geometry.grossVolumeM3)} m³`],
+        ["Volumen bruto de diseño", `${fmt(model.geometry.designGrossVolumeM3)} m³`],
+        ["Excavación de celdas", `${fmt(model.geometry.excavationVolumeM3)} m³`],
+        ["Excavación de rampas", `${fmt(model.geometry.rampExcavationVolumeM3)} m³`],
+        ["Excavación total", `${fmt(model.geometry.totalExcavationVolumeM3)} m³`],
+        ["Volumen sobre el terreno", `${fmt(model.geometry.aboveGradeVolumeM3)} m³`],
         ["Huella de celdas", `${fmt(model.geometry.footprintAreaM2)} m²`],
         ["Área de coronación", `${fmt(model.geometry.topAreaM2)} m²`],
         ["Área de impermeabilización", `${fmt(model.geometry.liningAreaM2)} m²`],
+        ["Área de cobertura final", `${fmt(model.geometry.finalCoverAreaM2)} m²`],
         ["Volumen del liner", `${fmt(model.geometry.linerVolumeM3)} m³`],
         ["Número de celdas", String(model.geometry.cells.length)],
       ],
@@ -495,35 +501,48 @@ export async function generateReport(
   // -------------------------------------------------------------------------
   if (sectionEnabled(options, "celdas")) {
     newPage();
-    heading("celdas", "5. Celdas y bermas", "Dimensiones inferiores, altura, talud y secuencia declarada.");
+    heading("celdas", "5. Celdas, métodos y bermas", "Método declarado y método efectivo derivado de la geometría. La excavación se limita a la altura de la celda y el borde libre reduce el volumen útil.");
     table(
-      ["Celda", "Tipo", "Fondo (m)", "Altura (m)", "Talud", "Bermas", "Coronación (m)", "Bruto (m³)"],
+      ["Celda", "Método", "Fondo (m)", "Altura (m)", "Corte / relleno (m)", "Borde libre (m)", "Talud", "Bermas", "Corona (m)"],
       model.geometry.cells.map((c) => [
         c.name,
-        `${c.shape === "excavated" ? "Excavada" : "Montículo"} / ${c.method}`,
+        c.methodMatches
+          ? CELL_METHOD_SPECS[c.method].shortLabel
+          : `${CELL_METHOD_SPECS[c.method].shortLabel} → ${CELL_METHOD_SPECS[c.effectiveMethod].shortLabel}`,
         `${nf1.format(c.bottomLengthM)} × ${nf1.format(c.bottomWidthM)}`,
         nf1.format(c.heightM),
-        `1H:${nf1.format(c.slopeHtoV)}V`,
+        `${nf1.format(c.cutDepthM)} / ${nf1.format(c.fillHeightM)}`,
+        nf2.format(c.freeboardM),
+        `1V:${nf1.format(c.slopeHtoV)}H`,
         `${c.bermCount}`,
         `${nf0.format(c.topLengthM)} × ${nf0.format(c.topWidthM)}`,
-        fmt(c.grossVolumeM3),
       ]),
-      [18, 25, 26, 17, 17, 14, 28, 25],
+      [18, 26, 24, 15, 26, 18, 15, 12, 24],
     );
     table(
-      ["Celda", "Base (m s. n. m.)", "Corona (m s. n. m.)", "Excavación (m)", "Área fondo (m²)", "Liner (m²)", "Advertencias"],
+      ["Celda", "Cota terreno", "Cota corona", "Corte (m³)", "Relleno (m³)", "Liner (m²)", "Cobertura (m²)", "Rampa", "Advertencias"],
       model.geometry.cells.map((c) => [
         c.name,
-        nf1.format(c.baseElevationM),
+        nf1.format(c.groundElevationM),
         nf1.format(c.topElevationM),
-        nf1.format(c.excavationDepthM),
-        fmt(c.bottomAreaM2),
+        fmt(c.cutVolumeM3),
+        fmt(c.aboveGradeVolumeM3),
         fmt(c.liningAreaM2),
-        c.warnings.length ? c.warnings.join(" ") : "—",
+        fmt(c.finalCoverAreaM2),
+        c.rampVolumeM3 > 0
+          ? `${nf1.format(c.rampLengthM)} m / ${fmt(c.rampVolumeM3)} m³`
+          : "—",
+        c.warnings.length || c.methodChecks.length
+          ? [...c.warnings, ...c.methodChecks.map((check) => check.title)].join(" ")
+          : "—",
       ]),
-      [16, 28, 28, 22, 25, 25, 38],
+      [16, 22, 22, 20, 20, 18, 22, 26, 42],
     );
-    paragraph("La cota de corona es base + altura. La excavación se limita a la altura geométrica de la celda. Las bermas se modelan como escalones horizontales.", 7.2, MUTED);
+    paragraph(
+      "El método efectivo se deriva del corte y del relleno: sin corte = área; sin relleno = trinchera; corte y relleno = rampa/combinado. Las bermas se modelan como escalones horizontales que reducen la dimensión de la celda. El borde libre se descuenta del volumen útil de residuos.",
+      7.2,
+      MUTED,
+    );
   }
 
   // -------------------------------------------------------------------------
@@ -566,16 +585,20 @@ export async function generateReport(
   // -------------------------------------------------------------------------
   if (sectionEnabled(options, "capacidad")) {
     newPage();
-    heading("capacidad", "7. Capacidad y tonelaje", "V_disp = V_bruto·FU − V_liner − V_infra; V_res = V_disp/(1+r_cob); T = V_res·ρ/1000.");
+    heading("capacidad", "7. Capacidad y tonelaje", "V_disp = V_bruto,diseño·FU − V_liner − V_infra; V_res = V_disp/(1+r_cob); T = V_res·ρ/1000.");
     y = labelValue(
       doc,
       [
-        ["Volumen bruto", `${fmt(model.capacity.geometricGrossVolumeM3)} m³`],
+        ["Volumen bruto geométrico", `${fmt(model.capacity.geometricGrossVolumeM3)} m³`],
+        ["Volumen bruto de diseño", `${fmt(model.capacity.designGrossVolumeM3)} m³`],
+        ["Volumen de borde libre", `${fmt(model.capacity.freeboardVolumeM3)} m³`],
         ["Liner descontado", `${fmt(model.capacity.linerVolumeM3)} m³`],
         ["Reserva de infraestructura", `${fmt(model.capacity.infrastructureReserveM3)} m³`],
         ["Volumen disponible", `${fmt(model.capacity.usableVolumeM3)} m³`],
         ["Volumen de residuos", `${fmt(model.capacity.wasteVolumeM3)} m³`],
         ["Volumen de cobertura", `${fmt(model.capacity.coverVolumeM3)} m³`],
+        ["Excavación total disponible", `${fmt(model.capacity.cutSoilAvailableM3)} m³`],
+        ["Balance de tierras", `${fmt(model.capacity.earthworksBalanceM3)} m³ (${model.capacity.earthworksStatus})`],
         ["Densidad de diseño", `${fmt(model.params.waste.capacityDensityBasis === "initial" ? model.params.waste.densityInitialKgM3 : model.params.waste.densityStabilizedKgM3)} kg/m³ (${model.params.waste.capacityDensityBasis === "initial" ? "inicial" : "estabilizada"})`],
         ["Tonelaje de diseño", `${fmt(model.capacity.totalTonnageT)} t`],
         ["Factor de utilización", fmtPct(model.capacity.utilizationFactor * 100)],
@@ -585,19 +608,25 @@ export async function generateReport(
       2,
     );
     table(
-      ["Celda", "Sec.", "Bruto (m³)", "Liner (m³)", "Reserva (m³)", "Residuos (m³)", "Cobertura (m³)", "Tonelaje (t)", "Llenado"],
+      ["Celda", "Sec.", "Bruto diseño (m³)", "Corte (m³)", "Relleno (m³)", "Liner (m³)", "Reserva (m³)", "Residuos (m³)", "Cobertura (m³)", "Tonelaje (t)"],
       model.capacity.cells.map((c) => [
         c.name,
         String(c.sequenceOrder),
         fmt(c.grossVolumeM3),
+        fmt(c.cutVolumeM3),
+        fmt(c.aboveGradeVolumeM3),
         fmt(c.linerVolumeM3),
         fmt(c.infrastructureReserveM3),
         fmt(c.wasteVolumeM3),
         fmt(c.coverVolumeM3),
         fmt(c.tonnageT),
-        fmtPct(c.fillFraction * 100),
       ]),
-      [17, 9, 24, 20, 22, 24, 24, 23, 18],
+      [16, 8, 22, 18, 18, 18, 18, 20, 20, 20],
+    );
+    paragraph(
+      `Balance de tierras: el material excavado en celdas y rampas (${fmt(model.capacity.cutSoilAvailableM3)} m³) ${model.capacity.earthworksStatus === "déficit" ? "no alcanza" : "cubre"} el volumen de cobertura requerido (${fmt(model.capacity.coverSoilDemandM3)} m³). El resultado es volumétrico y preliminar; no incluye préstamos para barrera mineral, pérdidas de manipulación ni compactación del suelo de cobertura.`,
+      7.2,
+      MUTED,
     );
     const preliminar = (365 * 1.25 * project.horizonYears * model.params.waste.population * model.params.waste.perCapitaKgDay * (model.params.waste.collectionCoveragePct / 100)) / 600;
     paragraph(

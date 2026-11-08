@@ -176,6 +176,46 @@ test("navegación: la barra contraída se puede expandir de nuevo", async ({ pag
   await expect(page.getByRole("button", { name: "Contraer navegación" })).toBeVisible();
 });
 
+test("métodos: cambiar el método de una celda altera geometría, volumen y balance de tierras", async ({ page }) => {
+  await enterLab(page);
+  await openModule(page, "Celdas y capas");
+
+  const volumeKpi = kpi(page, "Volumen bruto");
+  const balanceKpi = kpi(page, "Balance de tierras");
+  const volumeBefore = await volumeKpi.locator(".kpi-value").innerText();
+  const balanceBefore = await balanceKpi.locator(".kpi-value").innerText();
+
+  const table = page.locator("table.data-table");
+  const firstRow = table.locator("tbody tr").first();
+  await expect(firstRow).toContainText("Área");
+  await expect(firstRow).toContainText(/0[.,]0 \/ 12[.,]0 m/);
+
+  const editor = page.locator("section.panel").filter({ hasText: "Edición ·" });
+  const methodSelect = editor.getByLabel("Método constructivo");
+  await expect(methodSelect).toHaveValue("area");
+  await methodSelect.selectOption("ramp");
+
+  await expect(methodSelect).toHaveValue("ramp");
+  await expect(firstRow).toContainText("Rampa");
+  await expect(firstRow).toContainText(/5[.,]4 \/ 6[.,]6 m/);
+  await expect(editor.getByText("Rampa (ancho / pendiente / longitud)")).toBeVisible();
+  await expect(editor.getByText(/6[.,]0 m \/ 8[.,]0 % \/ 67[.,]5 m/)).toBeVisible();
+  await expect(editor.getByText("Método coherente: Rampa / combinado")).toBeVisible();
+
+  await expect
+    .poll(async () => volumeKpi.locator(".kpi-value").innerText())
+    .not.toBe(volumeBefore);
+  await expect
+    .poll(async () => balanceKpi.locator(".kpi-value").innerText())
+    .not.toBe(balanceBefore);
+
+  await page.reload();
+  await page.getByRole("button", { name: "Entrar al laboratorio" }).click();
+  await expect(page.locator("main.workspace")).toBeVisible();
+  await openModule(page, "Celdas y capas");
+  await expect(table.locator("tbody tr").first()).toContainText("Rampa");
+});
+
 test.describe("responsive", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 

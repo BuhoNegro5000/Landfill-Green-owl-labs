@@ -10,9 +10,9 @@
 | Nivel | Resultado |
 |---|---|
 | Compilación de producción | **Correcta** |
-| Pruebas unitarias Vitest | **20/20 aprobadas** |
-| Pruebas E2E Playwright | **7/7 aprobadas** |
-| Autopruebas de referencia GO-ENGINE | **8/8 aprobadas** |
+| Pruebas unitarias Vitest | **26/26 aprobadas** |
+| Pruebas E2E Playwright | **8/8 aprobadas** |
+| Autopruebas de referencia GO-ENGINE | **11/11 aprobadas** |
 | Módulos recorridos en navegador | **18/18** |
 | Persistencia tras recarga | **Verificada** |
 | Generación de PDF | **Verificada** (24 páginas en el caso de prueba) |
@@ -20,7 +20,7 @@
 | Importación y CRUD documental | **Verificadas** |
 | Modo compacto y responsive | **Verificados** |
 
-La verificación de navegador combina la sesión manual documentada en la sección 4 con una suite E2E automatizada de Playwright (sección 3.2). La suite recorre el arranque, los 18 módulos, el cambio de proyecto y escenario, la biblioteca normativa, la exportación JSON, la expansión de la barra lateral contraída y la navegación móvil. No se comparan píxeles del canvas WebGL porque el renderizado puede variar sin que falle la lógica de la aplicación.
+La verificación de navegador combina la sesión manual documentada en la sección 4 con una suite E2E automatizada de Playwright (sección 3.2). La suite recorre el arranque, los 18 módulos, el cambio de proyecto y escenario, la biblioteca normativa, la exportación JSON, la expansión de la barra lateral contraída, el cambio de método constructivo y la navegación móvil. No se comparan píxeles del canvas WebGL porque el renderizado puede variar sin que falle la lógica de la aplicación.
 
 ---
 
@@ -36,7 +36,7 @@ Resultado:
 
 ```text
 Test Files  1 passed (1)
-Tests       20 passed (20)
+Tests       26 passed (26)
 ```
 
 ### 2.1 Casos
@@ -55,7 +55,7 @@ Tests       20 passed (20)
 | 10 | OAT — orden | Base reproducida; filas ordenadas por impacto absoluto; población baja → más vida útil | 1×10⁻⁹ |
 | 11 | OAT — factores | Los factores aplicados coinciden con las etiquetas (población ±20 %, densidad ±15 %, precipitación ±25 %) | 1×10⁻⁶ |
 | 12 | Monte Carlo | Misma semilla → mismos percentiles; P10 ≤ P50 ≤ P90 | Exacta |
-| 13 | Autopruebas de la app | Las 8 verificaciones de referencia aprueban | Según caso |
+| 13 | Autopruebas de la app | Las 11 verificaciones de referencia aprueban | Según caso |
 | 14 | Biblioteca normativa | 13 documentos únicos, fecha de contraste 2026-11-04 y estados válidos | Exacta |
 | 15 | Fuentes oficiales | Las 8 normas peruanas verificadas citan `gob.pe` o `elperuano.pe`; Ley 32212 y D.S. 014-2017 localizados | Exacta |
 | 16 | Localización — matriz | El sitio demostrativo aprueba y reporta un porcentaje de cumplimiento | Exacta |
@@ -63,6 +63,12 @@ Tests       20 passed (20)
 | 18 | Localización — aeródromo | 8.5 km → «observado» en la franja 4–13 km | Exacta |
 | 19 | Localización — sin dato | Una exclusión no declarada se reporta como «sin dato», no como cumplimiento | Exacta |
 | 20 | Localización — restricción dura | Una exclusión marcada detiene la verificación y emite error | Exacta |
+| 21 | Métodos — geometría real | Trinchera, área y rampa con la misma base producen volúmenes, huella y áreas distintas | Exacta |
+| 22 | Métodos — presets | Aplicar un método cambia profundidad, cota, talud, bermas, borde libre y rampa | 1×10⁻⁶ |
+| 23 | Métodos — coherencia | Una etiqueta incoherente deriva en método efectivo distinto y advertencia `method-mismatch` | Exacta |
+| 24 | Borde libre | El volumen de diseño descuenta el borde libre y se reporta por separado | 1×10⁻⁶ |
+| 25 | Rampa | `L = h_corte / i`; `V = 0,5 · b · L · h_corte`; sin rampa en celdas de área | 1×10⁻⁶ |
+| 26 | Balance de tierras | Trinchera → superávit; área sin corte → déficit; excavación total = celdas + rampas | 1×10⁻⁶ |
 
 ### 2.2 Autopruebas de referencia
 
@@ -78,6 +84,9 @@ Se ejecutan en el splash, en **Métodos**, en **Configuración** y dentro de Vit
 | `infinite-slope` | Talud infinito | 1.732 | 1.732 |
 | `ipcc-fod` | Conservación de masa CH₄ | Potencial último | Integral coincide |
 | `water-balance` | Cierre hídrico y tratamiento | 100 % y Δ = 0 | 100 % y Δ < 1×10⁻⁶ |
+| `method-geometry` | Geometría real por método | Trinchera > rampa > área | Orden y etiquetas coherentes |
+| `ramp-wedge` | Longitud y cuña de rampa | 50 m y 600 m³ | 50,00 m y 600,00 m³ |
+| `earthworks-balance` | Balance excavación–cobertura | `B = V_exc − V_cob` | Δ < 1×10⁻⁶ |
 
 **Interpretación:** una autoprueba aprobada confirma la aritmética del caso documentado. No valida los datos del proyecto, la calidad del sitio ni el cumplimiento normativo.
 
@@ -130,9 +139,23 @@ La suite E2E usa `playwright.config.ts`, arranca o reutiliza `http://localhost:3
 | 4 | Normativa | 13 documentos, 8 vigentes, 1 pendiente, 4 históricos, enlaces oficiales y filtro |
 | 5 | Respaldo | Descarga JSON con 3 proyectos y 13 documentos |
 | 6 | Barra lateral | Contraer y volver a expandir con el botón visible y `aria-expanded` correcto |
-| 7 | Responsive | Menú móvil a 390 px, navegación a Normativa y cierre automático |
+| 7 | Métodos | Cambiar una celda de área a rampa: cambian fila, corte/relleno, rampa, volumen, balance y persiste tras recarga |
+| 8 | Responsive | Menú móvil a 390 px, navegación a Normativa y cierre automático |
 
 La suite no valida el contenido visual del canvas WebGL: en automatización el contexto gráfico puede degradarse y el splash activa la vista esquemática sin afectar los cálculos.
+
+### 3.3 Actualización de métodos constructivos (2026-11-08)
+
+Se incorporó la geometría dependiente del método (corte/relleno con pivote en el terreno), los presets de trinchera, área y rampa, el borde libre, la rampa de acceso y el balance de tierras. La verificación completa quedó así:
+
+```text
+npx tsc --noEmit    →  sin errores
+npx vitest run      →  1 archivo, 26/26 pruebas aprobadas
+npm run test:e2e    →  8/8 pruebas aprobadas (Chrome instalado, canal `chrome`)
+npm run build       →  compilación correcta, tipos y lint sin errores
+```
+
+La prueba E2E de métodos confirma que cambiar una celda de área a rampa modifica el corte/relleno de la fila, muestra los campos de rampa, actualiza los KPI de volumen y balance de tierras y persiste tras recargar. No se apoya en píxeles del canvas.
 
 ---
 
@@ -142,7 +165,7 @@ La suite no valida el contenido visual del canvas WebGL: en automatización el c
 
 | Elemento | Evidencia | Estado |
 |---|---|---|
-| Splash | Comprobaciones de almacenamiento, motor, WebGL y datos; autopruebas 8/8 | Correcto |
+| Splash | Comprobaciones de almacenamiento, motor, WebGL y datos; autopruebas 11/11 | Correcto |
 | Entrada al laboratorio | Transición al workspace; proyecto demo activo | Correcto |
 | 18 módulos | Recorrido completo: Proyectos, Emplazamiento, Modelo 3D, Celdas, Capacidad, Residuos, Lixiviados, Biogás, Operación, Geotecnia, Clausura, Escenarios, Sensibilidad, Resultados, Informes, Métodos, Normativa, Configuración | Correcto |
 | Navegación a Resultados | Badge de hallazgos y acceso desde topbar/sidebar | Correcto |
@@ -244,7 +267,7 @@ El CSV descargado, `relleno-mecanizado-la-ceiba-monte-carlo-200-20260101.csv`, c
 ## 5. Limitaciones de la verificación
 
 - **Capturas de pantalla del escritorio:** fallan cuando la ventana está oculta o minimizada. Por eso la verificación 3D se hizo con `readPixels` y con el PNG exportado, no con capturas de pantalla del sistema.
-- **Cobertura E2E acotada:** la suite automatizada usa el Chrome instalado en el equipo y siete flujos críticos. No sustituye una matriz multi-navegador ni pruebas de regresión visual; el canvas WebGL se valida de forma manual con `readPixels` y PNG exportado.
+- **Cobertura E2E acotada:** la suite automatizada usa el Chrome instalado en el equipo y ocho flujos críticos. No sustituye una matriz multi-navegador ni pruebas de regresión visual; el canvas WebGL se valida de forma manual con `readPixels` y PNG exportado.
 - **Datos sintéticos:** las cifras de la verificación corresponden a los proyectos demo; no son resultados de un sitio real.
 - **Localización declarativa:** la matriz compara lo que el usuario ingresa; no mide distancias ni interpreta cartografía oficial. El porcentaje de cumplimiento no es un puntaje de aptitud.
 - **WebGL:** la captura depende de `preserveDrawingBuffer` y del navegador. Si el contexto no expone el canvas, el informe se genera sin imagen y se avisa al usuario.
@@ -267,8 +290,8 @@ La suite E2E requiere Google Chrome instalado (`channel: "chrome"`). Si no está
 
 Luego:
 
-1. Entrar al splash y confirmar 8/8 autopruebas.
-2. Ejecutar `npm run test:e2e` y confirmar 7/7 flujos.
+1. Entrar al splash y confirmar 11/11 autopruebas.
+2. Ejecutar `npm run test:e2e` y confirmar 8/8 flujos.
 3. Abrir **Modelo 3D** y verificar el canvas y la captura PNG.
 4. Editar una celda y comprobar el recálculo de volumen, capacidad y vida útil.
 5. Cambiar de escenario y comparar.
@@ -289,7 +312,7 @@ Luego:
 | PDF de sesión | 182 919 bytes · 24 páginas · 2 imágenes |
 | PDF anterior | 252 809 bytes |
 | CSV Monte Carlo | 200 iteraciones · semilla 20260101 · P10/P50/P90/Media |
-| Reporte E2E | 7/7 pruebas · `npm run test:e2e` |
+| Reporte E2E | 8/8 pruebas · `npm run test:e2e` |
 | Biblioteca normativa | 13 documentos · contraste 2026-11-04 |
 
 Los archivos se generaron en la carpeta de descargas del navegador y no se versionan en el repositorio.

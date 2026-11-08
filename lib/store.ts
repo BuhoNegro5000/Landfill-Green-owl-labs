@@ -5,6 +5,7 @@ import { persist } from "zustand/middleware";
 import { produce } from "immer";
 import type {
   CellConfig,
+  CellMethod,
   Layer,
   Project,
   RawDocument,
@@ -16,6 +17,7 @@ import type {
 import { blankProject, demoProjects, defaultScenarioParams, makeScenario, standardScenarios } from "@/lib/defaults";
 import { DEFAULT_DOCUMENTS, reconcileDocuments } from "@/lib/normative";
 import { buildProject, type NewProjectInput } from "@/lib/templates";
+import { methodPreset } from "@/lib/engine/cellMethods";
 import { uid } from "@/lib/uid";
 import type { ModuleId } from "@/lib/nav";
 
@@ -119,6 +121,8 @@ interface AppState {
   updateScenarioParams: (recipe: (draft: ScenarioParams) => void) => void;
   setHorizon: (years: number) => void;
   updateCell: (cellId: string, patch: Partial<CellConfig>) => void;
+  applyCellMethod: (cellId: string, method: CellMethod) => void;
+  applyMethodToAllCells: (method: CellMethod) => void;
   addCell: () => void;
   duplicateCell: (cellId: string) => void;
   deleteCell: (cellId: string) => void;
@@ -378,6 +382,28 @@ export const useStore = create<AppState>()(
           if (cell) Object.assign(cell, patch);
         }),
 
+      applyCellMethod: (cellId, method) =>
+        get().updateScenarioParams((draft) => {
+          const cell = draft.geometry.cells.find((c) => c.id === cellId);
+          if (!cell) return;
+          Object.assign(
+            cell,
+            methodPreset(cell, method, {
+              terrainBaseElevationM: draft.geometry.terrainBaseElevationM,
+            }),
+          );
+        }),
+
+      applyMethodToAllCells: (method) =>
+        get().updateScenarioParams((draft) => {
+          const terrain = draft.geometry.terrainBaseElevationM;
+          draft.geometry.method = method;
+          draft.geometry.cells = draft.geometry.cells.map((cell) => ({
+            ...cell,
+            ...methodPreset(cell, method, { terrainBaseElevationM: terrain }),
+          }));
+        }),
+
       addCell: () =>
         set((state) => {
           const now = stamp();
@@ -405,15 +431,19 @@ export const useStore = create<AppState>()(
                         id: uid("cell"),
                         name: "Celda A",
                         method: "area",
-                        shape: "excavated",
+                        shape: "mound",
                         bottomLengthM: 90,
                         bottomWidthM: 60,
                         heightM: 10,
                         slopeHtoV: 2.5,
-                        excavationDepthM: 4,
-                        baseElevationM: s.params.geometry.terrainBaseElevationM - 4,
-                        bermCount: 1,
+                        excavationDepthM: 0,
+                        baseElevationM: s.params.geometry.terrainBaseElevationM,
+                        bermCount: 2,
                         bermWidthM: 3,
+                        freeboardM: 0.3,
+                        rampWidthM: 0,
+                        rampGradePct: 0,
+                        rampLengthM: 0,
                         sequenceOrder: 1,
                         notes: "",
                       };
@@ -777,7 +807,7 @@ export const useStore = create<AppState>()(
     }),
     {
       name: "green-owl-landfill-3d",
-      version: 3,
+      version: 4,
       skipHydration: true,
       migrate: (persistedState, version) => {
         const state = persistedState as PersistedWorkspace;
@@ -787,6 +817,31 @@ export const useStore = create<AppState>()(
         }
         if (version < 3) {
           next = { ...next, scene: { ...DEFAULT_SCENE, ...(next.scene ?? {}) } };
+        }
+        if (version < 4) {
+          next = {
+            ...next,
+            projects: next.projects.map((project) => ({
+              ...project,
+              scenarios: project.scenarios.map((scenario) => ({
+                ...scenario,
+                params: {
+                  ...scenario.params,
+                  geometry: {
+                    ...scenario.params.geometry,
+                    cells: scenario.params.geometry.cells.map((cell) => ({
+                      ...cell,
+                      shape: cell.method === "area" ? "mound" : "excavated",
+                      freeboardM: cell.freeboardM ?? (cell.method === "area" ? 0.3 : 0.4),
+                      rampWidthM: cell.rampWidthM ?? (cell.method === "ramp" ? 6 : 0),
+                      rampGradePct: cell.rampGradePct ?? (cell.method === "ramp" ? 8 : 0),
+                      rampLengthM: cell.rampLengthM ?? 0,
+                    })),
+                  },
+                },
+              })),
+            })),
+          };
         }
         return next;
       },

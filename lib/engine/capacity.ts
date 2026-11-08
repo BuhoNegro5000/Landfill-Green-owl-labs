@@ -9,7 +9,14 @@ import {
 export interface CellCapacity {
   cellId: string;
   name: string;
+  /** Volumen bruto geométrico de la celda (fondo a coronación). */
+  geometricGrossVolumeM3: number;
+  /** Volumen bruto disponible hasta la cota de diseño (altura − borde libre). */
   grossVolumeM3: number;
+  freeboardVolumeM3: number;
+  cutVolumeM3: number;
+  aboveGradeVolumeM3: number;
+  rampVolumeM3: number;
   linerVolumeM3: number;
   infrastructureReserveM3: number;
   wasteVolumeM3: number;
@@ -24,7 +31,15 @@ export interface CellCapacity {
 export interface CapacityResult {
   method: string;
   geometricGrossVolumeM3: number;
+  designGrossVolumeM3: number;
+  freeboardVolumeM3: number;
   excavationVolumeM3: number;
+  rampExcavationVolumeM3: number;
+  totalExcavationVolumeM3: number;
+  cutSoilAvailableM3: number;
+  coverSoilDemandM3: number;
+  earthworksBalanceM3: number;
+  earthworksStatus: "superávit" | "equilibrio" | "déficit";
   linerVolumeM3: number;
   infrastructureReserveM3: number;
   usableVolumeM3: number;
@@ -41,11 +56,12 @@ export interface CapacityResult {
 
 /**
  * Capacity model:
- *   V_available = V_gross · FU − V_liner − V_infra
- *   V_waste     = V_available / (1 + r_cover)
- *   T           = V_waste · ρ / 1000
- * with r_cover as a volume ratio (not a mass ratio). This is a preliminary
- * volumetric estimate based on design geometry; it is not a topographic survey.
+ *   V_disp = V_bruto_diseño · FU − V_liner − V_infra
+ *   V_res  = V_disp / (1 + r_cover)
+ *   T      = V_res · ρ / 1000
+ * with V_bruto_diseño limited by the freeboard and r_cover as a volume ratio.
+ * The method-aware geometry provides cut, above-grade and ramp volumes; the
+ * earthworks balance compares excavated soil with cover demand.
  */
 export function computeCapacity(
   geometry: GeometryResult,
@@ -60,13 +76,19 @@ export function computeCapacity(
 
   const cells: CellCapacity[] = geometry.cells.map((cell) => {
     const liner = cellLinerVolume(cell, layers);
-    const infra = (cell.grossVolumeM3 * infraPct) / 100;
-    const available = Math.max(0, cell.grossVolumeM3 * utilization - liner - infra);
+    const designGross = cell.designWasteVolumeM3;
+    const infra = (designGross * infraPct) / 100;
+    const available = Math.max(0, designGross * utilization - liner - infra);
     const wasteVolume = available / (1 + coverRatio);
     return {
       cellId: cell.id,
       name: cell.name,
-      grossVolumeM3: cell.grossVolumeM3,
+      geometricGrossVolumeM3: cell.grossVolumeM3,
+      grossVolumeM3: designGross,
+      freeboardVolumeM3: Math.max(0, cell.grossVolumeM3 - designGross),
+      cutVolumeM3: cell.cutVolumeM3,
+      aboveGradeVolumeM3: cell.aboveGradeVolumeM3,
+      rampVolumeM3: cell.rampVolumeM3,
       linerVolumeM3: liner,
       infrastructureReserveM3: infra,
       wasteVolumeM3: wasteVolume,
@@ -74,22 +96,36 @@ export function computeCapacity(
       tonnageT: (wasteVolume * density) / 1000,
       fillVolumeM3: 0,
       fillFraction: 0,
-      topElevationM: cell.baseElevationM,
+      topElevationM: cell.designTopElevationM,
       sequenceOrder: cell.sequenceOrder,
     };
   });
 
-  const gross = geometry.grossVolumeM3;
+  const geomGross = geometry.grossVolumeM3;
+  const designGross = geometry.designGrossVolumeM3;
   const linerVolume = geometry.linerVolumeM3;
-  const infra = (gross * infraPct) / 100;
-  const available = Math.max(0, gross * utilization - linerVolume - infra);
+  const infra = (designGross * infraPct) / 100;
+  const available = Math.max(0, designGross * utilization - linerVolume - infra);
   const wasteVolume = available / (1 + coverRatio);
   const coverVolume = wasteVolume * coverRatio;
+  const cutSoilAvailable = geometry.totalExcavationVolumeM3;
+  const earthworksBalance = cutSoilAvailable - coverVolume;
+  const earthworksStatus: CapacityResult["earthworksStatus"] =
+    earthworksBalance > 1e-6 ? "superávit" : earthworksBalance < -1e-6 ? "déficit" : "equilibrio";
 
   return {
-    method: "Capacidad volumétrica por integración de secciones (prismoidal)",
-    geometricGrossVolumeM3: gross,
+    method:
+      "Capacidad volumétrica por integración de secciones (prismoidal), con corte, relleno, borde libre y balance de tierras",
+    geometricGrossVolumeM3: geomGross,
+    designGrossVolumeM3: designGross,
+    freeboardVolumeM3: Math.max(0, geomGross - designGross),
     excavationVolumeM3: geometry.excavationVolumeM3,
+    rampExcavationVolumeM3: geometry.rampExcavationVolumeM3,
+    totalExcavationVolumeM3: geometry.totalExcavationVolumeM3,
+    cutSoilAvailableM3: cutSoilAvailable,
+    coverSoilDemandM3: coverVolume,
+    earthworksBalanceM3: earthworksBalance,
+    earthworksStatus,
     linerVolumeM3: linerVolume,
     infrastructureReserveM3: infra,
     usableVolumeM3: available,
@@ -104,9 +140,12 @@ export function computeCapacity(
     assumptionNotes: [
       "Volumen calculado por integración prismoidal de secciones horizontales; no reemplaza una cubicación topográfica.",
       `Factor de utilización del volumen: ${(utilization * 100).toFixed(0)} %.`,
-      `Reserva de infraestructura: ${infraPct.toFixed(1)} % del volumen bruto.`,
+      `Reserva de infraestructura: ${infraPct.toFixed(1)} % del volumen bruto de diseño.`,
       `Relación volumétrica de cobertura: ${waste.coverRatioPct.toFixed(1)} % del volumen de residuos.`,
-      "El volumen de la barrera mineral y geosintéticos se descuenta con el área de fondo y taludes del modelo.",
+      "El volumen bruto de diseño descuenta el borde libre declarado en cada celda; el volumen geométrico se informa por separado.",
+      "El volumen de la barrera mineral y geosintéticos se descuenta con el área de fondo y los taludes de corte del modelo.",
+      "El balance de tierras compara el material excavado (celdas + rampa) con el volumen de cobertura requerido; no incluye préstamos para barrera mineral ni pérdidas de manipulación.",
+      "El volumen de rampa se estima como cuña de acceso (0,5 · ancho · longitud · desnivel) y no forma parte del prisma de residuos.",
     ],
   };
 }

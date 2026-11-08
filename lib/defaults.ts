@@ -203,12 +203,17 @@ export function makeCells(options: {
   bermWidth?: number;
   shape?: CellConfig["shape"];
   method?: CellConfig["method"];
+  freeboard?: number;
+  rampWidth?: number;
+  rampGrade?: number;
 }): CellConfig[] {
+  const method = options.method ?? "area";
+  const shape = options.shape ?? (method === "area" ? "mound" : "excavated");
   return Array.from({ length: options.count }, (_, i) => ({
     id: uid("cell"),
     name: `Celda ${String.fromCharCode(65 + i)}`,
-    method: options.method ?? "area",
-    shape: options.shape ?? "excavated",
+    method,
+    shape,
     bottomLengthM: options.bottomLength,
     bottomWidthM: options.bottomWidth,
     heightM: options.height,
@@ -217,6 +222,10 @@ export function makeCells(options: {
     baseElevationM: options.baseElevation,
     bermCount: options.bermCount ?? 2,
     bermWidthM: options.bermWidth ?? 3,
+    freeboardM: options.freeboard ?? (method === "area" ? 0.3 : 0.4),
+    rampWidthM: options.rampWidth ?? (method === "ramp" ? 6 : 0),
+    rampGradePct: options.rampGrade ?? (method === "ramp" ? 8 : 0),
+    rampLengthM: 0,
     sequenceOrder: i + 1,
     notes: "",
   }));
@@ -287,10 +296,12 @@ export function defaultScenarioParams(overrides: Partial<ScenarioParams> = {}): 
         bottomWidth: 70,
         height: 12,
         slope: 2.5,
-        excavationDepth: 4,
-        baseElevation: 3246,
+        excavationDepth: 0,
+        baseElevation: 3250,
         bermCount: 2,
         bermWidth: 3,
+        method: "area",
+        freeboard: 0.3,
       }),
       layers: defaultLayers(),
     },
@@ -538,14 +549,15 @@ export function demoProjectTwo(): Project {
       cells: makeCells({
         count: 3,
         bottomLength: 90,
-        bottomWidth: 60,
-        height: 10,
-        slope: 3,
+        bottomWidth: 12,
+        height: 6,
+        slope: 1,
         excavationDepth: 6,
         baseElevation: 39,
-        bermCount: 1,
-        bermWidth: 3,
+        bermCount: 0,
+        bermWidth: 0,
         method: "trench",
+        freeboard: 0.4,
       }),
       layers: defaultLayers(),
     },
@@ -712,6 +724,9 @@ export function demoProjectThree(): Project {
         bermCount: 2,
         bermWidth: 3,
         method: "ramp",
+        freeboard: 0.3,
+        rampWidth: 6,
+        rampGrade: 8,
       }),
       layers: defaultLayers(),
     },
@@ -856,10 +871,12 @@ export function blankProject(): Project {
         bottomWidth: 65,
         height: 12,
         slope: 2.5,
-        excavationDepth: 4,
-        baseElevation: 496,
+        excavationDepth: 0,
+        baseElevation: 500,
         bermCount: 1,
         bermWidth: 3,
+        method: "area",
+        freeboard: 0.3,
       }),
       layers: defaultLayers(),
     },

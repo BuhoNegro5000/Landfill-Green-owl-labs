@@ -137,6 +137,60 @@ export function validateModel(input: ValidationInput): Issue[] {
     for (const w of cell.warnings) {
       if (cell.valid) issues.push(issue("warning", "cells", `cell-warn-${cell.id}-${w.slice(0, 8)}`, `${cell.name}: revisión geométrica`, w));
     }
+    for (const check of cell.methodChecks) {
+      issues.push(
+        issue(
+          check.severity,
+          "cells",
+          `cell-method-${cell.id}-${check.id}`,
+          `${cell.name}: ${check.title}`,
+          check.detail,
+          check.reference,
+        ),
+      );
+    }
+  }
+
+  const cellMethodSummary = geometry.cells.map((cell) => cell.effectiveMethod);
+  const declaredScenarioMethod = params.geometry.method;
+  if (
+    geometry.cells.length > 0 &&
+    cellMethodSummary.every((method) => method !== declaredScenarioMethod)
+  ) {
+    issues.push(
+      issue(
+        "info",
+        "geometry",
+        "geo-method-scenario",
+        "El método del escenario no coincide con la geometría de las celdas",
+        `El escenario declara "${declaredScenarioMethod}", pero las celdas tienen métodos efectivos ${[...new Set(cellMethodSummary)].join(", ")}. Use el preset de método en Celdas para alinear etiqueta y diseño.`,
+        "Guía MINAM 2019, pp. 24-26 (PDF 24-26)",
+      ),
+    );
+  }
+
+  if (capacity.earthworksBalanceM3 < -1e-6) {
+    issues.push(
+      issue(
+        "warning",
+        "capacity",
+        "cap-earthworks-deficit",
+        "Déficit de material de cobertura",
+        `El material excavado disponible (${capacity.cutSoilAvailableM3.toFixed(0)} m³) es menor que el volumen de cobertura requerido (${capacity.coverSoilDemandM3.toFixed(0)} m³). Déficit: ${Math.abs(capacity.earthworksBalanceM3).toFixed(0)} m³; prever préstamo o reducir la relación de cobertura.`,
+        "Balance de tierras del modelo; Guía MINAM 2011, p. 63",
+      ),
+    );
+  } else if (capacity.cutSoilAvailableM3 > 0 && capacity.earthworksBalanceM3 > capacity.cutSoilAvailableM3 * 0.5) {
+    issues.push(
+      issue(
+        "info",
+        "capacity",
+        "cap-earthworks-surplus",
+        "Superávit de material excavado",
+        `El material excavado (${capacity.cutSoilAvailableM3.toFixed(0)} m³) supera ampliamente la cobertura requerida (${capacity.coverSoilDemandM3.toFixed(0)} m³). Superávit: ${capacity.earthworksBalanceM3.toFixed(0)} m³; evaluar disposición, uso en vías o relleno de depresiones.`,
+        "Balance de tierras del modelo",
+      ),
+    );
   }
 
   if (siteAreaM2 > 0 && geometry.footprintAreaM2 > siteAreaM2) {

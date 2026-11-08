@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
-import type { CellConfig, GasParams, GeotechParams, WasteParams } from "@/lib/types";
-import { cellVolumeZeroTo, computeGeometry, heightForVolume } from "@/lib/engine/geometry";
+import type { CellConfig, CellMethod, GasParams, GeotechParams, WasteParams } from "@/lib/types";
+import {
+  CELL_METHOD_SPECS,
+  effectiveMethod,
+  methodChecks,
+  methodPreset,
+  methodSummary,
+} from "@/lib/engine/cellMethods";
+import { cellGeometry, cellVolumeZeroTo, computeGeometry, heightForVolume } from "@/lib/engine/geometry";
 import { computeCapacity } from "@/lib/engine/capacity";
 import { computeGas, ch4PotentialPerTonne } from "@/lib/engine/gas";
 import { computeGeotech } from "@/lib/engine/geotech";
@@ -235,6 +242,233 @@ describe("autopruebas de la aplicación", () => {
     const results = runSelfTests();
     const failed = results.filter((result) => !result.passed);
     expect(failed, failed.map((f) => `${f.id}: ${f.actual}`).join("; ")).toHaveLength(0);
+  });
+});
+
+describe("métodos constructivos y geometría efectiva", () => {
+  const base = {
+    bottomLengthM: 100,
+    bottomWidthM: 50,
+    heightM: 6,
+    slopeHtoV: 2,
+    bermCount: 1,
+    bermWidthM: 3,
+    freeboardM: 0.3,
+  } as const;
+
+  const trenchCell = testCell({
+    ...base,
+    method: "trench",
+    shape: "excavated",
+    excavationDepthM: 6,
+    baseElevationM: 94,
+  });
+  const areaCell = testCell({
+    ...base,
+    method: "area",
+    shape: "mound",
+    excavationDepthM: 0,
+    baseElevationM: 100,
+  });
+  const rampCell = testCell({
+    ...base,
+    method: "ramp",
+    shape: "excavated",
+    excavationDepthM: 3,
+    baseElevationM: 97,
+    rampWidthM: 6,
+    rampGradePct: 8,
+    rampLengthM: 0,
+  });
+
+  const geometryOf = (cells: CellConfig[]) =>
+    computeGeometry({
+      method: cells[0].method,
+      terrainBaseElevationM: 100,
+      footprintAreaM2: 100_000,
+      utilizationFactor: 0.9,
+      infrastructureReservePct: 5,
+      cells,
+      layers: defaultLayers(),
+    });
+
+  it("cambia la geometría real al cambiar el método, no solo la etiqueta", () => {
+    const trench = geometryOf([trenchCell]);
+    const area = geometryOf([areaCell]);
+    const ramp = geometryOf([rampCell]);
+
+    const t = trench.cells[0];
+    const a = area.cells[0];
+    const r = ramp.cells[0];
+
+    expect(t.effectiveMethod).toBe("trench");
+    expect(a.effectiveMethod).toBe("area");
+    expect(r.effectiveMethod).toBe("ramp");
+    expect(t.methodMatches && a.methodMatches && r.methodMatches).toBe(true);
+
+    // Corte y relleno describen el método.
+    expect(t.cutDepthM).toBeCloseTo(6, 9);
+    expect(t.fillHeightM).toBeCloseTo(0, 9);
+    expect(a.cutDepthM).toBeCloseTo(0, 9);
+    expect(a.fillHeightM).toBeCloseTo(6, 9);
+    expect(r.cutDepthM).toBeCloseTo(3, 9);
+    expect(r.fillHeightM).toBeCloseTo(3, 9);
+
+    // El pivote es la cota de terreno: la trinchera se ensancha, el área se estrecha.
+    expect(t.groundAreaM2).toBeGreaterThan(t.bottomAreaM2);
+    expect(a.groundAreaM2).toBeCloseTo(a.bottomAreaM2, 6);
+    expect(a.topAreaM2).toBeLessThan(a.groundAreaM2);
+    expect(r.groundAreaM2).toBeGreaterThan(r.bottomAreaM2);
+    expect(r.topAreaM2).toBeLessThan(r.groundAreaM2);
+
+    // Los volúmenes, la huella y las áreas de barrera/cobertura difieren.
+    expect(trench.grossVolumeM3).toBeGreaterThan(ramp.grossVolumeM3);
+    expect(ramp.grossVolumeM3).toBeGreaterThan(area.grossVolumeM3);
+    expect(t.excavationVolumeM3).toBeGreaterThan(0);
+    expect(a.excavationVolumeM3).toBeCloseTo(0, 9);
+    expect(r.excavationVolumeM3).toBeGreaterThan(0);
+    expect(r.aboveGradeVolumeM3).toBeGreaterThan(0);
+    expect(a.cutLateralAreaM2).toBeCloseTo(0, 9);
+    expect(a.fillLateralAreaM2).toBeGreaterThan(0);
+    expect(t.cutLateralAreaM2).toBeGreaterThan(0);
+    expect(t.liningAreaM2).toBeGreaterThan(t.finalCoverAreaM2);
+
+    expect(new Set([trench.grossVolumeM3, area.grossVolumeM3, ramp.grossVolumeM3]).size).toBe(3);
+  });
+
+  it("aplica presets que cambian profundidad, cota, talud, bermas, borde libre y rampa", () => {
+    const start = testCell({
+      method: "trench",
+      shape: "excavated",
+      heightM: 6,
+      excavationDepthM: 6,
+      baseElevationM: 94,
+      bermCount: 0,
+      bermWidthM: 0,
+      slopeHtoV: 0.5,
+      freeboardM: 0,
+    });
+
+    const areaPreset = methodPreset(start, "area", { terrainBaseElevationM: 100 });
+    const areaConfig: CellConfig = { ...start, ...areaPreset };
+    expect(areaConfig.method).toBe("area");
+    expect(areaConfig.shape).toBe("mound");
+    expect(areaConfig.excavationDepthM).toBe(0);
+    expect(areaConfig.baseElevationM).toBeCloseTo(100, 9);
+    expect(areaConfig.slopeHtoV).toBeCloseTo(CELL_METHOD_SPECS.area.recommendedSlopeHtoV, 6);
+    expect(areaConfig.bermCount).toBe(CELL_METHOD_SPECS.area.defaultBermCount);
+    expect(areaConfig.rampWidthM).toBe(0);
+    expect(effectiveMethod(areaConfig)).toBe("area");
+
+    const rampPreset = methodPreset(start, "ramp", { terrainBaseElevationM: 100 });
+    const rampConfig: CellConfig = { ...start, ...rampPreset };
+    expect(rampConfig.method).toBe("ramp");
+    expect(rampConfig.excavationDepthM ?? 0).toBeGreaterThan(0);
+    expect(rampConfig.baseElevationM).toBeCloseTo(100 - (rampConfig.excavationDepthM ?? 0), 5);
+    expect(rampConfig.rampWidthM).toBe(CELL_METHOD_SPECS.ramp.rampWidthM);
+    expect(rampConfig.rampGradePct).toBe(CELL_METHOD_SPECS.ramp.rampGradePct);
+    expect(rampConfig.freeboardM).toBeCloseTo(CELL_METHOD_SPECS.ramp.defaultFreeboardM, 6);
+    expect(effectiveMethod(rampConfig)).toBe("ramp");
+
+    const trenchPreset = methodPreset(
+      { ...start, method: "area", shape: "mound", excavationDepthM: 0, baseElevationM: 100 },
+      "trench",
+      { terrainBaseElevationM: 100 },
+    );
+    const trenchConfig: CellConfig = { ...start, ...trenchPreset };
+    expect(trenchConfig.heightM).toBeCloseTo(trenchConfig.excavationDepthM ?? 0, 6);
+    expect(trenchConfig.baseElevationM).toBeCloseTo(100 - (trenchConfig.excavationDepthM ?? 0), 5);
+    expect(trenchConfig.rampWidthM).toBe(0);
+    expect(effectiveMethod(trenchConfig)).toBe("trench");
+  });
+
+  it("detecta y advierte cuando el método declarado no coincide con la geometría", () => {
+    const mislabeled = testCell({
+      ...base,
+      method: "area",
+      shape: "mound",
+      excavationDepthM: 6,
+      baseElevationM: 94,
+    });
+    const summary = methodSummary(mislabeled);
+    expect(summary.declared).toBe("area");
+    expect(summary.effective).toBe("trench");
+    expect(summary.matches).toBe(false);
+
+    const checks = methodChecks(mislabeled, { terrainBaseElevationM: 100 });
+    expect(checks.some((check) => check.id === "method-mismatch")).toBe(true);
+    expect(checks.some((check) => check.id === "ground-mismatch")).toBe(false);
+  });
+
+  it("descuenta el borde libre del volumen útil y lo reporta aparte", () => {
+    const cell = testCell({
+      method: "trench",
+      shape: "excavated",
+      bottomLengthM: 60,
+      bottomWidthM: 6,
+      heightM: 10,
+      slopeHtoV: 0.75,
+      excavationDepthM: 10,
+      baseElevationM: 90,
+      bermCount: 0,
+      bermWidthM: 0,
+      freeboardM: 0.6,
+    });
+    const geometry = geometryOf([cell]);
+    const g = geometry.cells[0];
+
+    expect(g.designHeightM).toBeCloseTo(9.4, 9);
+    expect(g.designTopElevationM).toBeCloseTo(99.4, 9);
+    expect(g.grossVolumeM3).toBeGreaterThan(g.designWasteVolumeM3);
+
+    const capacity = computeCapacity(geometry, defaultLayers(), WASTE_FIXTURE, {
+      utilizationFactor: 0.9,
+      infrastructureReservePct: 5,
+    });
+    expect(capacity.freeboardVolumeM3).toBeCloseTo(g.grossVolumeM3 - g.designWasteVolumeM3, 6);
+    expect(capacity.cells[0].freeboardVolumeM3).toBeCloseTo(capacity.freeboardVolumeM3, 6);
+    expect(capacity.cells[0].grossVolumeM3).toBeCloseTo(g.designWasteVolumeM3, 9);
+    expect(capacity.usableVolumeM3).toBeLessThanOrEqual(g.designWasteVolumeM3 * 0.9 + 1e-9);
+  });
+
+  it("deriva la longitud de rampa del desnivel y la pendiente y calcula la cuña", () => {
+    const g = cellGeometry(rampCell, { terrainBaseElevationM: 100 });
+    expect(g.rampWidthM).toBe(6);
+    expect(g.rampGradePct).toBe(8);
+    expect(g.rampLengthM).toBeCloseTo(g.cutDepthM / 0.08, 6);
+    expect(g.rampVolumeM3).toBeCloseTo(0.5 * 6 * g.rampLengthM * g.cutDepthM, 6);
+
+    const declared = cellGeometry({ ...rampCell, rampLengthM: 30 }, { terrainBaseElevationM: 100 });
+    expect(declared.rampLengthM).toBe(30);
+    expect(declared.rampVolumeM3).toBeCloseTo(0.5 * 6 * 30 * declared.cutDepthM, 6);
+
+    const noRamp = cellGeometry(areaCell, { terrainBaseElevationM: 100 });
+    expect(noRamp.rampVolumeM3).toBe(0);
+  });
+
+  it("cierra el balance de tierras con el signo correcto", () => {
+    const options = { utilizationFactor: 0.9, infrastructureReservePct: 5 };
+
+    const trench = computeCapacity(geometryOf([trenchCell]), defaultLayers(), WASTE_FIXTURE, options);
+    expect(trench.cutSoilAvailableM3).toBeGreaterThan(0);
+    expect(trench.earthworksBalanceM3).toBeCloseTo(
+      trench.cutSoilAvailableM3 - trench.coverSoilDemandM3,
+      6,
+    );
+    expect(trench.earthworksStatus).toBe("superávit");
+    expect(trench.earthworksBalanceM3).toBeGreaterThan(0);
+
+    const area = computeCapacity(geometryOf([areaCell]), defaultLayers(), WASTE_FIXTURE, options);
+    expect(area.cutSoilAvailableM3).toBeCloseTo(0, 9);
+    expect(area.earthworksBalanceM3).toBeCloseTo(-area.coverSoilDemandM3, 6);
+    expect(area.earthworksStatus).toBe("déficit");
+
+    const ramp = computeCapacity(geometryOf([rampCell]), defaultLayers(), WASTE_FIXTURE, options);
+    expect(ramp.rampExcavationVolumeM3).toBeGreaterThan(0);
+    expect(ramp.totalExcavationVolumeM3).toBeCloseTo(
+      ramp.excavationVolumeM3 + ramp.rampExcavationVolumeM3,
+      6,
+    );
   });
 });
 

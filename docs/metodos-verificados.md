@@ -1,6 +1,6 @@
 # Métodos verificados
 
-**GO-ENGINE 1.0.0**
+**GO-ENGINE 1.1.0**
 
 Este documento describe las formulaciones implementadas, su fuente, la función de código que las ejecuta y el tipo de verificación aplicada. La distinción es importante:
 
@@ -19,7 +19,10 @@ Ninguna verificación interna equivale a certificación, calibración de campo n
 |---|---|---|---|---|---|
 | `prismoid` | Volumen de celda por integración prismoidal | Geometría | MINAM 2011, pp. 58–59 | `geometry.cellVolumeZeroTo` / `computeGeometry` | Validado con ejemplo |
 | `slice` | Integración por secciones con bermas | Geometría | GO-ENGINE | `geometry.cellGeometry` / `heightForVolume` | Verificado por balance |
+| `method-presets` | Traducción del método constructivo a geometría | Geometría | Guía MINAM 2019 pp. 24–26, 36–37; MINAM 2011 pp. 56–59 | `cellMethods.methodPreset` / `effectiveMethod` / `methodChecks` | Validado con ejemplo |
+| `ramp-wedge` | Longitud y cuña preliminar de rampa | Geometría | Guía MINAM 2019, vías internas pp. 61–62 | `geometry.rampGeometry` | Verificado por balance |
 | `capacity` | Capacidad útil y tonelaje | Residuos | MINAM 2011 pp. 60–63; Honduras 2014 pp. 33–35, 46–49 | `capacity.computeCapacity` | Verificado por balance |
+| `earthworks-balance` | Balance de tierras excavación–cobertura | Residuos | GO-ENGINE | `capacity.computeCapacity` | Verificado por balance |
 | `honduras-capacity` | Capacidad preliminar requerida | Residuos | Honduras 2014, pp. 33–35 | Referencia comparativa | Referencia |
 | `waste-balance` | Balance anual y vida útil | Residuos | MINAM 2011 pp. 61–63; Honduras 2014 pp. 46–50 | `waste.computeWasteBalance` | Verificado por balance |
 | `water-balance` | Balance hídrico y lixiviados | Lixiviados | MINAM 2011, pp. 73–77 | `leachate.computeLeachate` | Verificado por balance |
@@ -49,6 +52,8 @@ V = Σ (h_i / 6) · (A_1 + 4·A_m + A_2)
 
 donde `A_1`, `A_m` y `A_2` son las áreas al inicio, medio y fin de cada intervalo. Las bermas se modelan como escalones horizontales de ancho `b` cada `H/n`.
 
+El perfil usa un **pivote en la cota de terreno** (`cota_fondo + profundidad_de_corte`): bajo el terreno el corte se ensancha hacia arriba y sobre el terreno el relleno se estrecha. Así, trinchera, área y rampa comparten un solo integrador sin cambiar la fórmula de volumen.
+
 **Caso MINAM 2011, p. 59.** Trinchera con corona 76 × 7 m, fondo 73.5 × 4.5 m y altura 2.5 m.
 
 | Cálculo | Resultado |
@@ -63,7 +68,41 @@ La fórmula del manual es una aproximación de tronco; el motor integra el prism
 
 **Limitación:** no es una cubicación topográfica. No usa un TIN, no modela intersecciones entre celdas ni irregularidades del terreno.
 
-### 2.2 Área de liner y capas
+### 2.2 Métodos constructivos y geometría efectiva
+
+El método (`trench`, `area`, `ramp`) se traduce a geometría real mediante presets:
+
+| Método | Corte | Relleno | Efecto geométrico |
+|---|---|---|---|
+| Trinchera | `H` | ≈0 | La celda se ensancha desde el fondo hasta el terreno; termina en el borde de excavación. |
+| Área | 0 | `H` | La celda arranca en el terreno y se estrecha hacia la coronación. |
+| Rampa / combinado | `0 < h_corte < H` | `H − h_corte` | Hay corte bajo el terreno y relleno sobre él; se añade una rampa de acceso. |
+
+El **método efectivo** no es una etiqueta: se deriva de `h_corte` y `h_relleno` con una tolerancia `max(0,25 m; 2 % de H)`. Si el método declarado no coincide, la validación emite `method-mismatch` con referencia a la Guía MINAM 2019 (pp. 24–26) y a la Guía MINAM 2011 (pp. 56–58).
+
+El preset conserva largo y ancho de fondo y ajusta profundidad, cota de fondo, altura, talud, bermas, borde libre y rampa. Los presets son puntos de partida técnicos, no límites legales ni diseños óptimos.
+
+**Verificación:** pruebas unitarias y autoprueba `method-geometry`: con la misma base de 100 × 50 m y 6 m de altura, trinchera > rampa > área en volumen bruto, y cada celda reporta el método efectivo coherente.
+
+### 2.3 Rampa de acceso
+
+```text
+L = h_corte / (i / 100)        si L no se declara
+V_rampa = 0,5 · b · L · h_corte
+```
+
+- `i`: pendiente longitudinal (%).
+- `b`: ancho de rampa (m).
+- `L`: longitud horizontal (m).
+- `h_corte`: desnivel entre terreno y fondo (m).
+
+La cuña es excavación auxiliar y **no forma parte del prisma de residuos**. La referencia de vías internas de la Guía MINAM 2019 (pp. 61–62) indica 6 m de ancho para vía permanente con bermas de 0,75 m y pendiente máxima de 8 % (7 % sobre 3000 m s. n. m.); 5 m para vía temporal y >10 % solo excepcionalmente en tramos cortos.
+
+**Verificación:** autoprueba `ramp-wedge`: 4 m de desnivel al 8 % → 50 m; ancho 6 m → 600 m³.
+
+**Limitación:** no modela curvas, peralte, drenaje, muros, bermas de seguridad ni empalmes con plataformas.
+
+### 2.4 Área de liner y capas
 
 - Área de fondo: `L_fondo · W_fondo`.
 - Área lateral: integración del perímetro por intervalos, multiplicada por la longitud inclinada `√(1 + s²)`; incluye la superficie horizontal de cada berma.
@@ -80,18 +119,20 @@ Los espesores del cálculo son reales. La exageración de capas del visor 3D es 
 ### 3.1 Capacidad
 
 ```text
-V_disponible = V_bruto · FU − V_liner − V_infra
+V_bruto,diseño = V(cota_diseño) = V(H − borde_libre)
+V_disponible = V_bruto,diseño · FU − V_liner − V_infra
 V_residuos   = V_disponible / (1 + r_cobertura)
 V_cobertura  = V_residuos · r_cobertura
 T            = V_residuos · ρ / 1000
 ```
 
+- `V_bruto,diseño`: volumen hasta la cota de diseño, descontando el borde libre; el volumen geométrico completo se reporta aparte.
 - `FU`: factor de utilización volumétrica, configurable.
-- `V_infra`: porcentaje del volumen bruto, configurable.
+- `V_infra`: porcentaje del volumen bruto de diseño, configurable.
 - `r_cobertura`: relación **volumétrica** de cobertura, no másica.
 - `ρ`: densidad inicial compactada o estabilizada, según la base seleccionada.
 
-**Cierre comprobado:** `V_residuos + V_cobertura = V_disponible` y `T = V_residuos · ρ / 1000`, con tolerancia `1×10⁻⁶`.
+**Cierre comprobado:** `V_residuos + V_cobertura = V_disponible` y `T = V_residuos · ρ / 1000`, con tolerancia `1×10⁻⁶`. El borde libre se comprueba además como `V_geométrico − V_diseño`.
 
 **Referencia Honduras 2014.** La fórmula preliminar:
 
@@ -103,7 +144,22 @@ Con 120 000 hab, 0.75 kg/hab/día, 85 % de cobertura y 12 años se obtienen **69
 
 **Limitación:** estimación volumétrica de diseño. No incorpora asentamientos diferenciales, pérdida de capacidad por inestabilidad ni levantamiento topográfico.
 
-### 3.2 Balance anual
+### 3.2 Balance de tierras
+
+```text
+V_excavación_total = Σ V_corte,celdas + Σ V_rampas
+B = V_excavación_total − V_cobertura_requerida
+```
+
+- `B > 0`: superávit de material excavado.
+- `B = 0`: equilibrio volumétrico.
+- `B < 0`: déficit; se requiere préstamo.
+
+El balance es **volumétrico y preliminar**: no incluye préstamos para barrera mineral, pérdidas de manipulación, compactación del suelo de cobertura ni esponjamiento. Una celda de área sin corte produce déficit igual a `−V_cobertura`; una trinchera con corte suficiente produce superávit.
+
+**Verificación:** autoprueba `earthworks-balance` y pruebas unitarias: la excavación total suma celdas y rampas, el balance se cierra contra la cobertura y el estado coincide con el signo.
+
+### 3.3 Balance anual
 
 ```text
 Población_t = Población_0 · (1 + i)^t
@@ -121,7 +177,7 @@ El agotamiento se detecta cuando el volumen dispuesto supera el remanente. El a�
 
 **Limitación:** crecimiento geométrico constante; no modela migración interdistrital, cambios de política, recirculación ni densidad variable en el tiempo.
 
-### 3.3 Asignación a celdas
+### 3.4 Asignación a celdas
 
 Los volúmenes anuales se asignan en orden de `sequenceOrder`. Cada celda recibe volumen hasta su capacidad de residuos; la elevación se obtiene invirtiendo la curva volumen-altura. Esto alimenta la animación 3D, la cota máxima y el estado de celdas activas/cerradas.
 
@@ -347,7 +403,7 @@ Generador `mulberry32` con semilla fija. Percentiles P10, P50, P90 y media. La m
 
 ## 10. Valores de referencia y clasificación
 
-La aplicación cita 26 valores de las guías. Se clasifican como **recomendación técnica**, **dato de diseño** o **rango observado**; ninguno se aplica como límite legal automático. Ejemplos:
+La aplicación cita 31 valores de las guías. Se clasifican como **recomendación técnica**, **dato de diseño** o **rango observado**; ninguno se aplica como límite legal automático. Ejemplos:
 
 | Parámetro | Valor citado | Fuente | Clasificación |
 |---|---|---|---|
@@ -367,8 +423,12 @@ La aplicación cita 26 valores de las guías. Se clasifican como **recomendació
 | CH₄ en biogás | 40–60 % | MINAM p. 87; Honduras p. 92 | Rango observado |
 | Cobertura final | 0.50 m (referencia) | MINAM 2011, p. 64 | Recomendación técnica |
 | Vida útil | ≥5 años; recomendable ≥10 | MINAM 2011, p. 62 | Recomendación técnica |
+| Vía interna permanente | 6 m + bermas 0,75 m; ≤8 % (7 % >3000 m s. n. m.) | Guía MINAM 2019, pp. 61–62 | Recomendación técnica |
+| Vía interna temporal | 5 m; >10 % solo tramos cortos | Guía MINAM 2019, pp. 61–62 | Recomendación técnica |
+| Taludes de corte y relleno | Cuadros N.° 19–20 | Guía MINAM 2019, pp. 36–37 | Recomendación técnica |
+| Ejemplo de trinchera | 3 m × 6 m (Honduras); 2,5 m (MINAM) | Honduras PDF p. 36; MINAM pp. 56–59 | Rango observado |
 
-La tabla completa, con 26 entradas y uso en la aplicación, está en `lib/methods.ts` y en el módulo **Métodos**.
+La tabla completa, con 31 entradas y uso en la aplicación, está en `lib/methods.ts` y en el módulo **Métodos**.
 
 ### 10.1 Verificación de localización (R.M. 165-2021 / art. 110)
 
@@ -413,10 +473,13 @@ Estas comprobaciones son binarias y se reportan con documento y página. No veri
 | Talud infinito β=18.43°, φ'=30° | FS = 1.732 |
 | IPCC FOD, 1 000 t | integral ≈ potencial último |
 | Balance hídrico | cierre 100 % |
+| Métodos constructivos | trinchera > rampa > área; métodos efectivos coherentes |
+| Rampa de acceso | L = 50 m; V = 600 m³ |
+| Balance de tierras | B = V_excavación_total − V_cobertura |
 | OAT | base reproducida y orden por impacto |
 | Monte Carlo | misma semilla → mismos percentiles |
 
-Las autopruebas de la aplicación ejecutan **8/8** verificaciones; las pruebas Vitest ejecutan **20** casos y la suite Playwright **6** flujos E2E. El detalle está en [`pruebas-verificacion.md`](pruebas-verificacion.md).
+Las autopruebas de la aplicación ejecutan **11/11** verificaciones; las pruebas Vitest ejecutan **26** casos y la suite Playwright **8** flujos E2E. El detalle está en [`pruebas-verificacion.md`](pruebas-verificacion.md).
 
 ---
 

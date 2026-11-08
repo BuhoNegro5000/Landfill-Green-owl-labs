@@ -1,5 +1,5 @@
 import type { CellConfig, GasParams, GeotechParams, WasteParams } from "@/lib/types";
-import { computeGeometry, cellVolumeZeroTo } from "@/lib/engine/geometry";
+import { computeGeometry, cellGeometry, cellVolumeZeroTo } from "@/lib/engine/geometry";
 import { computeCapacity } from "@/lib/engine/capacity";
 import { computeGas, ch4PotentialPerTonne } from "@/lib/engine/gas";
 import { computeGeotech } from "@/lib/engine/geotech";
@@ -221,6 +221,157 @@ export function runSelfTests(): SelfTestResult[] {
     tolerance: "±0.5 % de cierre; 1×10⁻⁶ m³",
     passed: Math.abs(waterClosure - 100) < 0.5 && treatmentGap < 1e-6,
     detail: "Verifica P = R + ET + I en la suma anual y la partición del volumen de lixiviados entre tratamiento y déficit.",
+  });
+
+  // 8. Method-aware geometry: the same footprint must produce different real
+  // geometry for area, trench and ramp cells.
+  const methodCells = [
+    testCell({
+      id: "cell_trench",
+      name: "Trinchera",
+      method: "trench",
+      shape: "excavated",
+      bottomLengthM: 100,
+      bottomWidthM: 50,
+      heightM: 6,
+      slopeHtoV: 2,
+      bermCount: 1,
+      bermWidthM: 3,
+      excavationDepthM: 6,
+      baseElevationM: 94,
+      freeboardM: 0.3,
+    }),
+    testCell({
+      id: "cell_area",
+      name: "Área",
+      method: "area",
+      shape: "mound",
+      bottomLengthM: 100,
+      bottomWidthM: 50,
+      heightM: 6,
+      slopeHtoV: 2,
+      bermCount: 1,
+      bermWidthM: 3,
+      excavationDepthM: 0,
+      baseElevationM: 100,
+      freeboardM: 0.3,
+    }),
+    testCell({
+      id: "cell_ramp",
+      name: "Rampa",
+      method: "ramp",
+      shape: "excavated",
+      bottomLengthM: 100,
+      bottomWidthM: 50,
+      heightM: 6,
+      slopeHtoV: 2,
+      bermCount: 1,
+      bermWidthM: 3,
+      excavationDepthM: 3,
+      baseElevationM: 97,
+      freeboardM: 0.3,
+      rampWidthM: 6,
+      rampGradePct: 8,
+      rampLengthM: 0,
+    }),
+  ];
+  const methodGeometry = computeGeometry({
+    method: "ramp",
+    terrainBaseElevationM: 100,
+    footprintAreaM2: 100_000,
+    utilizationFactor: 0.9,
+    infrastructureReservePct: 5,
+    cells: methodCells,
+    layers: defaultLayers(),
+  });
+  const byId = new Map(methodGeometry.cells.map((cell) => [cell.id, cell]));
+  const trenchCell = byId.get("cell_trench")!;
+  const areaCell = byId.get("cell_area")!;
+  const rampCell = byId.get("cell_ramp")!;
+  const methodVolumes = [trenchCell.grossVolumeM3, areaCell.grossVolumeM3, rampCell.grossVolumeM3];
+  const methodOrder = trenchCell.grossVolumeM3 > rampCell.grossVolumeM3 && rampCell.grossVolumeM3 > areaCell.grossVolumeM3;
+  const methodLabels =
+    trenchCell.effectiveMethod === "trench" &&
+    areaCell.effectiveMethod === "area" &&
+    rampCell.effectiveMethod === "ramp";
+  results.push({
+    id: "method-geometry",
+    name: "Método constructivo con geometría real",
+    methodId: "method-presets",
+    source: "Guía MINAM 2019, pp. 24–26 y 36–37; Guía MINAM 2011, pp. 56–59",
+    expected: "Trinchera > rampa > área para la misma base; métodos efectivos coherentes",
+    actual: `V_trinchera ${trenchCell.grossVolumeM3.toFixed(0)} m³; V_rampa ${rampCell.grossVolumeM3.toFixed(0)} m³; V_área ${areaCell.grossVolumeM3.toFixed(0)} m³`,
+    relativeError: null,
+    tolerance: "orden estricto y etiquetas coherentes",
+    passed: methodOrder && methodLabels && new Set(methodVolumes).size === 3,
+    detail:
+      "La misma base de 100 × 50 m y 6 m de altura produce volúmenes distintos y método efectivo distinto según el corte y el relleno.",
+  });
+
+  // 9. Ramp length and preliminary wedge volume.
+  const rampCheckCell = testCell({
+    id: "cell_ramp_check",
+    name: "Rampa de prueba",
+    method: "ramp",
+    shape: "excavated",
+    bottomLengthM: 80,
+    bottomWidthM: 40,
+    heightM: 10,
+    slopeHtoV: 2,
+    bermCount: 1,
+    bermWidthM: 3,
+    excavationDepthM: 4,
+    baseElevationM: 96,
+    freeboardM: 0.3,
+    rampWidthM: 6,
+    rampGradePct: 8,
+    rampLengthM: 0,
+  });
+  const rampGeometry = cellGeometry(rampCheckCell, { terrainBaseElevationM: 100 });
+  results.push({
+    id: "ramp-wedge",
+    name: "Longitud y cuña de rampa",
+    methodId: "ramp-wedge",
+    source: "Guía MINAM 2019, vías internas, pp. 61–62 (PDF 63–64)",
+    expected: "L = 50 m; V = 600 m³",
+    actual: `L = ${rampGeometry.rampLengthM.toFixed(2)} m; V = ${rampGeometry.rampVolumeM3.toFixed(2)} m³`,
+    relativeError: rampGeometry.rampVolumeM3 > 0 ? (rampGeometry.rampVolumeM3 - 600) / 600 : null,
+    tolerance: "±0.001 %",
+    passed: close(rampGeometry.rampLengthM, 50, 1e-9) && close(rampGeometry.rampVolumeM3, 600, 1e-6),
+    detail: "Desnivel de 4 m al 8 % → 50 m; ancho 6 m → 0,5 · 6 · 50 · 4 = 600 m³.",
+  });
+
+  // 10. Earthworks balance closure.
+  const methodCapacity = computeCapacity(methodGeometry, defaultLayers(), waste, {
+    utilizationFactor: 0.9,
+    infrastructureReservePct: 5,
+  });
+  const earthworksGap = Math.abs(
+    methodCapacity.earthworksBalanceM3 - (methodCapacity.cutSoilAvailableM3 - methodCapacity.coverSoilDemandM3),
+  );
+  const expectedStatus =
+    methodCapacity.earthworksBalanceM3 > 1e-6
+      ? "superávit"
+      : methodCapacity.earthworksBalanceM3 < -1e-6
+        ? "déficit"
+        : "equilibrio";
+  results.push({
+    id: "earthworks-balance",
+    name: "Balance de tierras",
+    methodId: "earthworks-balance",
+    source: "GO-ENGINE — balance volumétrico interno",
+    expected: "B = V_excavación_total − V_cobertura; estado coherente con el signo",
+    actual: `B = ${methodCapacity.earthworksBalanceM3.toFixed(2)} m³ (${methodCapacity.earthworksStatus})`,
+    relativeError:
+      methodCapacity.cutSoilAvailableM3 > 0 ? earthworksGap / methodCapacity.cutSoilAvailableM3 : null,
+    tolerance: "1×10⁻⁶ m³",
+    passed:
+      earthworksGap < 1e-6 &&
+      methodCapacity.earthworksStatus === expectedStatus &&
+      methodCapacity.totalExcavationVolumeM3 ===
+        methodCapacity.excavationVolumeM3 + methodCapacity.rampExcavationVolumeM3,
+    detail:
+      "La excavación total suma celdas y rampas; el balance se cierra contra la cobertura requerida y el estado coincide con el signo.",
   });
 
   return results;

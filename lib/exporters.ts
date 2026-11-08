@@ -145,7 +145,12 @@ export function exportCapacityCsv(model: ComputedModel, project: Project): void 
     [
       { key: "name", label: "Celda" },
       { key: "sequenceOrder", label: "Secuencia" },
-      { key: "grossVolumeM3", label: "Volumen bruto (m3)" },
+      { key: "geometricGrossVolumeM3", label: "Volumen geométrico (m3)" },
+      { key: "grossVolumeM3", label: "Volumen bruto de diseño (m3)" },
+      { key: "freeboardVolumeM3", label: "Volumen de borde libre (m3)" },
+      { key: "cutVolumeM3", label: "Corte (m3)" },
+      { key: "aboveGradeVolumeM3", label: "Relleno sobre terreno (m3)" },
+      { key: "rampVolumeM3", label: "Excavación de rampa (m3)" },
       { key: "linerVolumeM3", label: "Liner (m3)" },
       { key: "infrastructureReserveM3", label: "Reserva infraestructura (m3)" },
       { key: "wasteVolumeM3", label: "Volumen residuos (m3)" },

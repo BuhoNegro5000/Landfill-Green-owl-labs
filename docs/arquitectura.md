@@ -82,8 +82,9 @@ Cada motor recibe primitivas o subobjetos tipados y devuelve una interfaz export
 
 | Motor | Entrada principal | Salida |
 |---|---|---|
-| `geometry.ts` | `GeometryParams` | `GeometryResult` con celdas, capas, perfil y volúmenes |
-| `capacity.ts` | `GeometryResult`, capas, `WasteParams` | `CapacityResult` con volumen útil y tonelaje |
+| `geometry.ts` | `GeometryParams` | `GeometryResult` con celdas, capas, perfil, corte/relleno y rampa |
+| `cellMethods.ts` | `CellConfig`, método declarado | especificación, preset, método efectivo y verificaciones |
+| `capacity.ts` | `GeometryResult`, capas, `WasteParams` | `CapacityResult` con volumen de diseño, borde libre, tierras y tonelaje |
 | `waste.ts` | `WasteParams`, `CapacityResult`, celdas | `WasteResult` con serie anual y asignación por celda |
 | `leachate.ts` | sitio, `LeachateParams`, `WasteResult` | `LeachateResult` con balance, caudales y dimensionamiento |
 | `gas.ts` | `GasParams`, `WasteResult`, año de cierre | `GasResult` con serie IPCC, captura y energía |
@@ -336,7 +337,7 @@ No existen exportaciones simuladas ni botones que solo muestren un aviso: cada a
 
 ### 8.1 Vitest
 
-`tests/engine.test.ts` contiene **20 pruebas**. Los casos se agrupan así:
+`tests/engine.test.ts` contiene **26 pruebas**. Los casos se agrupan así:
 
 - Integración prismoidal de la trinchera MINAM y comparación con la fórmula de tronco (2 casos).
 - Inversión volumen–altura.
@@ -353,6 +354,10 @@ No existen exportaciones simuladas ni botones que solo muestren un aviso: cada a
 - Integridad de la biblioteca normativa (13 documentos, estados y fecha de contraste).
 - Fuente oficial de las 8 normas peruanas verificadas.
 - Verificación de localización: matriz del sitio demostrativo, distancia a población, franja aeroportuaria, distinción «sin dato» y exclusión como restricción dura (5 casos).
+- Diferenciación real de métodos: trinchera, área y rampa cambian volumen, huella y áreas.
+- Presets de método y detección de incoherencia entre etiqueta y geometría.
+- Borde libre descontado del volumen de diseño y reportado aparte.
+- Longitud/cuña de rampa y balance de tierras con signo correcto.
 
 Comando:
 
@@ -362,7 +367,7 @@ npx vitest run
 
 ### 8.2 Autopruebas en vivo
 
-`lib/selfTest.ts` ejecuta **8 verificaciones** de referencia dentro de la aplicación:
+`lib/selfTest.ts` ejecuta **11 verificaciones** de referencia dentro de la aplicación:
 
 - Geometría prismoidal.
 - Capacidad y balance.
@@ -428,8 +433,9 @@ components/
 
 lib/
   engine/
-    geometry.ts         Prismas, taludes, bermas, capas, perfil
-    capacity.ts         Volumen útil, cobertura, tonelaje
+    geometry.ts         Prismas, taludes, bermas, corte/relleno, rampa, capas, perfil
+    cellMethods.ts      Métodos, presets, método efectivo y verificaciones
+    capacity.ts         Volumen de diseño, borde libre, tierras, cobertura, tonelaje
     waste.ts            Proyección anual y vida útil
     leachate.ts         Balance hídrico e hidráulica
     gas.ts              IPCC FOD, captura, energía
@@ -457,8 +463,8 @@ lib/
   uid.ts                Identificadores
 
 tests/
-  engine.test.ts        20 pruebas Vitest
-  e2e/app.spec.ts       7 pruebas Playwright
+  engine.test.ts        26 pruebas Vitest
+  e2e/app.spec.ts       8 pruebas Playwright
 
 scripts/
   extract-sources.mjs   Extracción de texto de fuentes

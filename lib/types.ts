@@ -79,6 +79,14 @@ export interface CellConfig {
   bermWidthM: number;
   sequenceOrder: number;
   notes: string;
+  /** Borde libre entre la cota de residuos y el borde de la celda (m). */
+  freeboardM?: number;
+  /** Ancho de la rampa de acceso para el método combinado/tipo rampa (m). */
+  rampWidthM?: number;
+  /** Pendiente longitudinal de la rampa de acceso (%). */
+  rampGradePct?: number;
+  /** Longitud de rampa declarada (m). Si es 0 o no existe, se deriva de la pendiente. */
+  rampLengthM?: number;
 }
 
 /**

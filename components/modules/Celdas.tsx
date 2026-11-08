@@ -16,6 +16,7 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -23,8 +24,9 @@ import {
 } from "recharts";
 import { useModel } from "@/components/ModelProvider";
 import { useStore } from "@/lib/store";
-import type { LayerCategory } from "@/lib/types";
+import type { CellMethod, LayerCategory } from "@/lib/types";
 import { cellProfile, cellSurfaceAreaAtHeight } from "@/lib/engine/geometry";
+import { CELL_METHOD_OPTIONS, CELL_METHOD_SPECS, methodSummary } from "@/lib/engine/cellMethods";
 import { exportCapacityCsv } from "@/lib/exporters";
 import { fmt, fmtPct } from "@/lib/format";
 import {
@@ -66,6 +68,8 @@ export default function Celdas() {
   const { model, project, scenario } = useModel();
   const updateScenarioParams = useStore((s) => s.updateScenarioParams);
   const updateCell = useStore((s) => s.updateCell);
+  const applyCellMethod = useStore((s) => s.applyCellMethod);
+  const applyMethodToAllCells = useStore((s) => s.applyMethodToAllCells);
   const addCell = useStore((s) => s.addCell);
   const duplicateCell = useStore((s) => s.duplicateCell);
   const deleteCell = useStore((s) => s.deleteCell);
@@ -90,6 +94,7 @@ export default function Celdas() {
   const [layerId, setLayerId] = useState<string | null>(null);
   const [pendingDeleteCell, setPendingDeleteCell] = useState<string | null>(null);
   const [pendingDeleteLayer, setPendingDeleteLayer] = useState<string | null>(null);
+  const [pendingBulkMethod, setPendingBulkMethod] = useState<CellMethod | null>(null);
 
   useEffect(() => {
     if (!selectedCellId && cells.length > 0) setSelectedCell(cells[0].id);
@@ -98,6 +103,7 @@ export default function Celdas() {
   const activeCell = cells.find((c) => c.id === selectedCellId) ?? cells[0] ?? null;
   const activeConfig = activeCell ? configs.get(activeCell.id) : undefined;
   const activeCapacity = model.capacity.cells.find((c) => c.cellId === activeCell?.id);
+  const activeSummary = activeConfig ? methodSummary(activeConfig) : null;
 
   useEffect(() => {
     if (!layerId && model.params.geometry.layers.length) setLayerId(model.params.geometry.layers[0].id);
@@ -147,8 +153,25 @@ export default function Celdas() {
       ),
     },
     { key: "sequenceOrder", label: "Sec.", align: "center", width: "54px" },
-    { key: "shape", label: "Tipo", render: (row) => (row.shape === "excavated" ? "Excavada" : "Montículo") },
+    {
+      key: "method",
+      label: "Método",
+      render: (row) => (
+        <span className="cell-method">
+          <strong>{CELL_METHOD_SPECS[row.method].shortLabel}</strong>
+          {!row.methodMatches ? (
+            <Badge tone="amber">{`→ ${CELL_METHOD_SPECS[row.effectiveMethod].shortLabel}`}</Badge>
+          ) : null}
+        </span>
+      ),
+    },
     { key: "heightM", label: "Altura", align: "right", render: (row) => `${fmt(row.heightM, 1)} m` },
+    {
+      key: "cutFill",
+      label: "Corte / relleno",
+      align: "right",
+      render: (row) => `${fmt(row.cutDepthM, 1)} / ${fmt(row.fillHeightM, 1)} m`,
+    },
     {
       key: "dimensions",
       label: "Base / corona",
@@ -255,9 +278,16 @@ export default function Celdas() {
 
       <KpiGrid>
         <Kpi label="Celdas modeladas" value={String(cells.length)} hint={`${cells.filter((c) => c.valid).length} válidas geométricamente`} tone={cells.some((c) => !c.valid) ? "amber" : "leaf"} icon={<Layers3 size={15} />} />
-        <Kpi label="Volumen bruto" value={fmt(model.geometry.grossVolumeM3)} unit="m³" hint={`Excavación ${fmt(model.geometry.excavationVolumeM3)} m³`} />
-        <Kpi label="Huella modelada" value={fmt(model.geometry.footprintAreaM2)} unit="m²" hint={`Área de coronación ${fmt(model.geometry.topAreaM2)} m²`} tone="blue" />
-        <Kpi label="Área de barrera" value={fmt(model.geometry.liningAreaM2)} unit="m²" hint="Fondo + taludes + bermas" tone="amber" icon={<Ruler size={15} />} />
+        <Kpi label="Volumen bruto" value={fmt(model.geometry.grossVolumeM3)} unit="m³" hint={`Diseño ${fmt(model.geometry.designGrossVolumeM3)} m³ · excavación ${fmt(model.geometry.excavationVolumeM3)} m³`} />
+        <Kpi label="Huella modelada" value={fmt(model.geometry.footprintAreaM2)} unit="m²" hint={`Coronación ${fmt(model.geometry.topAreaM2)} m² · cobertura ${fmt(model.geometry.finalCoverAreaM2)} m²`} tone="blue" />
+        <Kpi label="Área de barrera" value={fmt(model.geometry.liningAreaM2)} unit="m²" hint="Fondo + taludes de corte + bermas" tone="amber" icon={<Ruler size={15} />} />
+        <Kpi
+          label="Balance de tierras"
+          value={fmt(model.capacity.earthworksBalanceM3)}
+          unit="m³"
+          hint={`${model.capacity.earthworksStatus} · cobertura requerida ${fmt(model.capacity.coverSoilDemandM3)} m³`}
+          tone={model.capacity.earthworksBalanceM3 < 0 ? "amber" : "leaf"}
+        />
       </KpiGrid>
 
       <Panel
@@ -266,15 +296,14 @@ export default function Celdas() {
         description="Parámetros comunes a todas las celdas. El factor de utilización y la reserva de infraestructura se descuentan antes de calcular el volumen de residuos."
       >
         <FormGrid columns={3}>
-          <Field label="Método de construcción" hint="El método se registra y etiqueta; la geometría se calcula con la misma integración prismoidal.">
+          <Field
+            label="Método constructivo del escenario"
+            hint="Al cambiar el método se abre una confirmación y se aplica el preset geométrico a todas las celdas: profundidad, cota de fondo, talud, bermas, borde libre y rampa."
+          >
             <SelectField
               value={model.params.geometry.method}
-              onChange={(value) => updateScenarioParams((draft) => { draft.geometry.method = value as typeof draft.geometry.method; })}
-              options={[
-                { value: "area", label: "Celda de área" },
-                { value: "trench", label: "Trinchera" },
-                { value: "ramp", label: "Rampa" },
-              ]}
+              onChange={(value) => setPendingBulkMethod(value as CellMethod)}
+              options={CELL_METHOD_OPTIONS.map((option) => ({ value: option.value, label: option.label }))}
             />
           </Field>
           <Field label="Cota base del terreno">
@@ -333,25 +362,14 @@ export default function Celdas() {
                 onChange={(event) => updateCell(activeCell.id, { name: event.target.value })}
               />
             </Field>
-            <Field label="Tipo de celda">
-              <SelectField
-                value={activeConfig.shape}
-                onChange={(value) => updateCell(activeCell.id, { shape: value as typeof activeConfig.shape })}
-                options={[
-                  { value: "excavated", label: "Excavada (se ensancha con la altura)" },
-                  { value: "mound", label: "Montículo (se estrecha con la altura)" },
-                ]}
-              />
-            </Field>
-            <Field label="Método">
+            <Field
+              label="Método constructivo"
+              hint="Cambiar el método aplica un preset real: profundidad, cota de fondo, talud, bermas, borde libre y rampa."
+            >
               <SelectField
                 value={activeConfig.method}
-                onChange={(value) => updateCell(activeCell.id, { method: value as typeof activeConfig.method })}
-                options={[
-                  { value: "area", label: "Área" },
-                  { value: "trench", label: "Trinchera" },
-                  { value: "ramp", label: "Rampa" },
-                ]}
+                onChange={(value) => applyCellMethod(activeCell.id, value as CellMethod)}
+                options={CELL_METHOD_OPTIONS.map((option) => ({ value: option.value, label: option.label }))}
               />
             </Field>
             <Field label="Largo de fondo">
@@ -363,11 +381,14 @@ export default function Celdas() {
             <Field label="Altura de celda">
               <NumberField value={activeConfig.heightM} onChange={(v) => updateCell(activeCell.id, { heightM: v })} min={0.5} max={200} step={0.5} unit="m" />
             </Field>
-            <Field label="Pendiente de talud" hint="1H:3V = 3; 1H:2,5V = 2,5.">
-              <NumberField value={activeConfig.slopeHtoV} onChange={(v) => updateCell(activeCell.id, { slopeHtoV: v })} min={0.25} max={6} step={0.1} unit="H:1V" />
+            <Field label="Talud (H:V)" hint="2,5 = 1V:2,5H; 0,5 = 1V:0,5H; 3 = 1V:3H.">
+              <NumberField value={activeConfig.slopeHtoV} onChange={(v) => updateCell(activeCell.id, { slopeHtoV: v })} min={0.25} max={6} step={0.1} unit="H:V" />
             </Field>
-            <Field label="Profundidad de excavación">
+            <Field label="Profundidad de corte" hint="Parte de la celda bajo el terreno natural. 0 = celda de área.">
               <NumberField value={activeConfig.excavationDepthM} onChange={(v) => updateCell(activeCell.id, { excavationDepthM: v })} min={0} max={200} step={0.5} unit="m" />
+            </Field>
+            <Field label="Borde libre" hint="Separación entre la cota de residuos y el borde de la celda.">
+              <NumberField value={activeConfig.freeboardM ?? 0} onChange={(v) => updateCell(activeCell.id, { freeboardM: v })} min={0} max={5} step={0.05} unit="m" />
             </Field>
             <Field label="Cota de fondo">
               <NumberField value={activeConfig.baseElevationM} onChange={(v) => updateCell(activeCell.id, { baseElevationM: v })} min={-500} max={6000} step={0.5} unit="m s. n. m." />
@@ -381,18 +402,51 @@ export default function Celdas() {
             <Field label="Secuencia">
               <NumberField value={activeConfig.sequenceOrder} onChange={(v) => updateCell(activeCell.id, { sequenceOrder: Math.round(v) })} min={1} max={99} step={1} />
             </Field>
+            {activeSummary?.effective === "ramp" || activeConfig.method === "ramp" ? (
+              <>
+                <Field label="Ancho de rampa" hint="Vía interna: 6 m permanente; 5 m temporal.">
+                  <NumberField value={activeConfig.rampWidthM ?? 0} onChange={(v) => updateCell(activeCell.id, { rampWidthM: v })} min={0} max={30} step={0.5} unit="m" />
+                </Field>
+                <Field label="Pendiente de rampa" hint="Máximo permanente 8 % (≤3000 m s. n. m.); temporal excepcional >10 % en tramos cortos.">
+                  <NumberField value={activeConfig.rampGradePct ?? 0} onChange={(v) => updateCell(activeCell.id, { rampGradePct: v })} min={0} max={20} step={0.5} unit="%" />
+                </Field>
+                <Field label="Longitud de rampa" hint="0 = se deriva del desnivel y la pendiente.">
+                  <NumberField value={activeConfig.rampLengthM ?? 0} onChange={(v) => updateCell(activeCell.id, { rampLengthM: v })} min={0} max={2000} step={1} unit="m" />
+                </Field>
+              </>
+            ) : null}
           </FormGrid>
+
+          {activeSummary ? (
+            <Callout
+              tone={activeSummary.matches ? "success" : "warn"}
+              title={
+                activeSummary.matches
+                  ? `Método coherente: ${activeSummary.effectiveLabel}`
+                  : `Método declarado ${activeSummary.declaredLabel} · geometría efectiva ${activeSummary.effectiveLabel}`
+              }
+            >
+              {CELL_METHOD_SPECS[activeSummary.effective].description}
+            </Callout>
+          ) : null}
           <Field label="Notas de la celda">
             <TextArea value={activeConfig.notes} rows={2} onChange={(event) => updateCell(activeCell.id, { notes: event.target.value })} placeholder="Condiciones locales, restricciones de operación, drenaje…" />
           </Field>
 
           <div className="cell-summary-grid">
+            <div><span>Método declarado / efectivo</span><strong>{activeSummary?.declaredLabel} / {activeSummary?.effectiveLabel}</strong></div>
+            <div><span>Corte / relleno</span><strong>{fmt(activeCell.cutDepthM, 1)} / {fmt(activeCell.fillHeightM, 1)} m</strong></div>
+            <div><span>Borde libre / altura útil</span><strong>{fmt(activeCell.freeboardM, 2)} / {fmt(activeCell.designHeightM, 1)} m</strong></div>
+            <div><span>Cota de terreno / corona</span><strong>{fmt(activeCell.groundElevationM, 1)} / {fmt(activeCell.topElevationM, 1)} m</strong></div>
             <div><span>Corona</span><strong>{fmt(activeCell.topLengthM, 1)} × {fmt(activeCell.topWidthM, 1)} m</strong></div>
-            <div><span>Área de fondo</span><strong>{fmt(activeCell.bottomAreaM2)} m²</strong></div>
-            <div><span>Área de corona</span><strong>{fmt(activeCell.topAreaM2)} m²</strong></div>
-            <div><span>Área lateral</span><strong>{fmt(activeCell.lateralAreaM2)} m²</strong></div>
-            <div><span>Volumen bruto</span><strong>{fmt(activeCell.grossVolumeM3)} m³</strong></div>
-            <div><span>Excavación</span><strong>{fmt(activeCell.excavationVolumeM3)} m³</strong></div>
+            <div><span>Área de fondo / terreno</span><strong>{fmt(activeCell.bottomAreaM2)} / {fmt(activeCell.groundAreaM2)} m²</strong></div>
+            <div><span>Área de barrera</span><strong>{fmt(activeCell.liningAreaM2)} m²</strong></div>
+            <div><span>Área de cobertura final</span><strong>{fmt(activeCell.finalCoverAreaM2)} m²</strong></div>
+            <div><span>Volumen bruto / diseño</span><strong>{fmt(activeCell.grossVolumeM3)} / {fmt(activeCell.designWasteVolumeM3)} m³</strong></div>
+            <div><span>Corte / relleno (volumen)</span><strong>{fmt(activeCell.cutVolumeM3)} / {fmt(activeCell.aboveGradeVolumeM3)} m³</strong></div>
+            {activeSummary?.effective === "ramp" || activeConfig.method === "ramp" ? (
+              <div><span>Rampa (ancho / pendiente / longitud)</span><strong>{fmt(activeCell.rampWidthM, 1)} m / {fmt(activeCell.rampGradePct, 1)} % / {fmt(activeCell.rampLengthM, 1)} m</strong></div>
+            ) : null}
             <div><span>Capacidad de residuos</span><strong>{fmt(activeCapacity?.wasteVolumeM3 ?? 0)} m³</strong></div>
             <div><span>Tonelaje</span><strong>{fmt(activeCapacity?.tonnageT ?? 0)} t</strong></div>
           </div>
@@ -405,17 +459,26 @@ export default function Celdas() {
             tone={(activeCapacity?.fillFraction ?? 0) >= 1 ? "leaf" : "amber"}
           />
 
-          {activeCell.warnings.length ? (
-            <Callout tone="warn" title="Advertencias de esta celda">
+          {activeCell.warnings.length || activeCell.methodChecks.length ? (
+            <Callout
+              tone={activeCell.methodChecks.some((check) => check.severity === "warning") ? "warn" : "info"}
+              title={`Advertencias de ${activeCell.name}`}
+            >
               <ul className="compact-list">
                 {activeCell.warnings.map((warning) => <li key={warning}>{warning}</li>)}
+                {activeCell.methodChecks.map((check) => (
+                  <li key={check.id}>
+                    <strong>{check.title}:</strong> {check.detail}
+                    {check.reference ? <em> ({check.reference})</em> : null}
+                  </li>
+                ))}
               </ul>
             </Callout>
           ) : null}
 
           <ChartCard
             title="Perfil área–altura y volumen acumulado"
-            subtitle="Integración por intervalos de berma; el eje vertical es la altura relativa desde el fondo."
+            subtitle="El pivote es la cota de terreno: bajo ella el corte se ensancha; sobre ella el relleno se estrecha. Las líneas marcan terreno y cota de diseño."
             height={220}
             legend={[
               { label: "Área horizontal (m²)", color: CHART_COLORS.blue },
@@ -431,10 +494,16 @@ export default function Celdas() {
                   </linearGradient>
                 </defs>
                 <CartesianGrid stroke={CHART_COLORS.grid} vertical={false} />
-                <XAxis dataKey="height" {...axisProps} tickFormatter={(v) => `${fmt(Number(v), 0)} m`} />
+                <XAxis dataKey="height" type="number" domain={[0, Math.max(activeCell.heightM, 0.1)]} {...axisProps} tickFormatter={(v) => `${fmt(Number(v), 0)} m`} />
                 <YAxis yAxisId="left" {...axisProps} tickFormatter={(v) => fmt(Number(v))} width={54} />
                 <YAxis yAxisId="right" orientation="right" {...axisProps} tickFormatter={(v) => fmt(Number(v))} width={54} />
                 <Tooltip content={<ChartTooltip />} />
+                {activeCell.cutDepthM > 0.05 && activeCell.cutDepthM < activeCell.heightM ? (
+                  <ReferenceLine x={activeCell.cutDepthM} yAxisId="left" stroke={CHART_COLORS.amber} strokeDasharray="4 3" label={{ value: "terreno", position: "insideTopRight", fill: CHART_COLORS.amber, fontSize: 10 }} />
+                ) : null}
+                {activeCell.designHeightM < activeCell.heightM ? (
+                  <ReferenceLine x={activeCell.designHeightM} yAxisId="left" stroke={CHART_COLORS.leaf} strokeDasharray="2 2" label={{ value: "diseño", position: "insideBottomRight", fill: CHART_COLORS.leaf, fontSize: 10 }} />
+                ) : null}
                 <Area yAxisId="left" type="monotone" dataKey="area" name="Área" stroke={CHART_COLORS.blue} fill="url(#cell-area)" strokeWidth={1.8} isAnimationActive={false} />
                 <Area yAxisId="right" type="monotone" dataKey="volume" name="Volumen" stroke={CHART_COLORS.leaf} fill="none" strokeWidth={1.8} isAnimationActive={false} />
               </AreaChart>
@@ -442,7 +511,7 @@ export default function Celdas() {
           </ChartCard>
 
           <InlineNote tone="amber">
-            <TriangleAlert size={13} /> La forma es un prisma de caras planas con escalones de berma. No representa curvas de nivel topográficas ni intersecciones reales entre celdas.
+            <TriangleAlert size={13} /> El perfil es un prisma de caras planas con escalones de berma. No representa curvas de nivel topográficas ni intersecciones reales entre celdas. El balance de tierras es volumétrico y no sustituye el diseño de préstamos ni la cubicación topográfica.
           </InlineNote>
         </Panel>
       ) : null}
@@ -535,6 +604,28 @@ export default function Celdas() {
         onConfirm={() => {
           if (pendingDeleteLayer) deleteLayer(pendingDeleteLayer);
           setPendingDeleteLayer(null);
+        }}
+      />
+      <ConfirmDialog
+        open={Boolean(pendingBulkMethod)}
+        onClose={() => setPendingBulkMethod(null)}
+        title="Aplicar método a todas las celdas"
+        description={
+          pendingBulkMethod
+            ? `Se aplicará el preset de ${CELL_METHOD_SPECS[pendingBulkMethod].label} a todas las celdas: profundidad de corte, cota de fondo, altura, talud, bermas, borde libre y parámetros de rampa. Las dimensiones de fondo se conservan. La capacidad, el 3D y los informes se recalcularán.`
+            : ""
+        }
+        confirmLabel="Aplicar método"
+        onConfirm={() => {
+          if (pendingBulkMethod) {
+            applyMethodToAllCells(pendingBulkMethod);
+            pushToast({
+              kind: "info",
+              title: `Método ${CELL_METHOD_SPECS[pendingBulkMethod].label} aplicado`,
+              detail: "La geometría, la capacidad y el balance de tierras se recalcularon para todas las celdas.",
+            });
+          }
+          setPendingBulkMethod(null);
         }}
       />
     </div>
