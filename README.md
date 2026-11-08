@@ -101,12 +101,25 @@ Las pruebas E2E usan Playwright con el Chrome instalado en el equipo (`channel: 
 
 ---
 
+## Despliegue en Vercel
+
+La aplicación es un proyecto Next.js 14 con salida estática: solo se prerenderizan `/` y `/_not-found`, no usa API routes, backend, variables de entorno ni servicios externos. Por eso **no requiere `vercel.json`** ni configuración especial.
+
+1. En Vercel, elija **Add New → Project** e importe `BuhoNegro5000/Landfill-Green-owl-labs`.
+2. Mantenga el preset **Next.js**, directorio raíz `./`, build `npm run build`, install `npm install` y Node.js **20.x**.
+3. No agregue variables de entorno. Despliegue.
+4. Tras el despliegue, verifique splash, creación de proyecto, persistencia al recargar, visor 3D e informe PDF.
+
+Cada `push` a `main` genera un despliegue de producción si el repositorio está conectado. Los datos siguen siendo **locales a cada navegador**: Vercel solo sirve los archivos estáticos; no hay base de datos ni sincronización entre visitantes. Guía detallada: [`docs/despliegue-vercel.md`](docs/despliegue-vercel.md).
+
+---
+
 ## Persistencia y respaldo
 
 - Clave de `localStorage`: **`green-owl-landfill-3d`**.
 - Se persisten proyectos, escenarios, documentos, proyecto/escenario activo, módulo activo, preferencias de escena y preferencias de interfaz.
 - `skipHydration: true` evita desajustes de hidratación; `AppRoot` llama a `hydrateStore()` una sola vez al montar.
-- El esquema persistido usa **versión 3**. Al migrar desde la versión 1 se actualizan los documentos canónicos de la biblioteca normativa; desde la versión 2 se incorporan los nuevos controles de escena (vías, edificios, drenaje, pozas, biogás, monitoreo, cerco y vegetación). Los documentos agregados por el usuario se conservan.
+- El esquema persistido usa **versión 4**. Al migrar desde la versión 1 se actualizan los documentos canónicos de la biblioteca normativa; desde la versión 2 se incorporan los controles de escena (vías, edificios, drenaje, pozas, biogás, monitoreo, cerco y vegetación); desde la versión 3 se completan los campos de método constructivo, borde libre y rampa, y se normalizan las etiquetas de forma. Los documentos agregados por el usuario se conservan.
 - Exportaciones reales:
   - **Proyecto JSON** con formato `green-owl-landfill-3d` y versión de esquema 1.
   - **Respaldo completo** con formato `green-owl-landfill-3d-backup`.
