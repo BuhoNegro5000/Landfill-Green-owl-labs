@@ -14,6 +14,7 @@
     "extract:sources": "node scripts/extract-sources.mjs"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "clsx": "2.1.1",
     "immer": "10.1.1",
     "jspdf": "2.5.2",
